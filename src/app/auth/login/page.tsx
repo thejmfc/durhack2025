@@ -1,14 +1,12 @@
 "use client"
 import supabase from "@/Supabase";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 
 export default function Login(){
-    const router = useRouter();
     const [formData, setFormData] = useState({email: "", password: ""})
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
@@ -25,7 +23,7 @@ export default function Login(){
             setError(loginError.message);
             return;
         } else {
-            router.push("/dashboard");
+            redirect("/dashboard"); 
         }
 
     }
