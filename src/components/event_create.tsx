@@ -5,6 +5,7 @@ import { refresh } from "next/cache";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { IoIosAddCircle } from "react-icons/io";
 
 export default function EventCreate() { 
     const { user, session } = useAuth();
@@ -53,7 +54,8 @@ export default function EventCreate() {
             setError(err.message);
         } finally {
             setLoading(false);
-            // router.refresh();
+            setIsModalOpen(false);
+            window.location.reload(); 
         }
     }
 
@@ -68,25 +70,10 @@ export default function EventCreate() {
     
     return (
         <>
-            <div className="max-w-1/3 bg-white rounded-3xl shadow-xl overflow-hidden">
-                <div className="bg-gradient-to-br from-indigo-500 to-purple-600">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_box" />
-                </div>
-                
-                <div className="p-6">
-                    <section className="flex flex-col justify-center items-center">
-                        <h1 className="text-xl font-bold text-gray-900 text-center">
-                            Your next event!
-                        </h1>
-                        <button 
-                            onClick={() => setIsModalOpen(true)}
-                            className="max-w-1/3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 text-md font-semibold rounded-full shadow-md hover:shadow-lg transition hover:cursor-pointer"
-                        >
-                            Add Event
-                        </button>
-                    </section>
-                </div>
+            <div onClick={() => setIsModalOpen(true)} className="fixed bottom-5 right-5 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg hover:cursor-pointer">
+                <IoIosAddCircle color="white" size={48} />
             </div>
+
 
             {/* Modal Overlay */}
             {isModalOpen && (
@@ -190,7 +177,7 @@ export default function EventCreate() {
                                     type="submit"
                                     className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200 hover:cursor-pointer"
                                 >
-                                    Create Event {isError}
+                                    Create Event
                                 </button>
                                 <button
                                     type="button"
