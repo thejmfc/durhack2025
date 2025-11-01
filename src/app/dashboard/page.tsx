@@ -42,7 +42,7 @@ export default function Dashboard() {
     const nextUpcoming = events
       .filter(e => new Date(e.event_start_date) > new Date())
       .sort((a, b) => new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime())[0];
-    
+      
     return (
         <section className="flex flex-col w-full">
             <LogoutButton />
@@ -80,6 +80,8 @@ export default function Dashboard() {
 
                 </div>
             </div>
+
+            <EventCreate />
        
         </section>
     )
