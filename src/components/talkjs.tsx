@@ -1,32 +1,43 @@
 import { useState } from "react";
 
+// Defines the shape of a chat message, sender (user or bot) and message (string)
 interface Message {
     sender: "user" | "bot";
     text: string;
 }
 
 export default function ChatUI() {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]); // State for all chat messages
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // If a user is sending a new message
     async function handleSend() {
-        if (!input.trim()) return;
+        if (!input.trim()) return; // return empty is no string
         setMessages([...messages, { sender: "user", text: input }]);
         setLoading(true);
+
+        // Send over the user's question to the backend Gemini API route
         const res = await fetch("/api/askGemini", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ question: input }),
         });
+
+
         const data = await res.json();
+
+        // Add the bots reply to the chat window
         setMessages(msgs =>
             [...msgs, { sender: "bot", text: data.answer }]
         );
+
+        // Clear the input field for the next entry
         setInput("");
         setLoading(false);
     }
 
+    // UI rendering, styles
     return (
         <div className="max-w-md mx-auto p-4 bg-white rounded-xl shadow-lg">
             <div className="mb-2 h-64 overflow-y-auto border rounded-lg bg-gray-50 px-3 py-2">
