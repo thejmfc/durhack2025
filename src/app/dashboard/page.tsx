@@ -37,10 +37,10 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h2>eventss owned by {user?.email}</h2>
+      <h2>Events owned by {user?.email}</h2>
       <ul className="space-y-2">
         {events.map((e) => (
-          <Link key={e} href={`/dashboard/${events.event_id}`}>{events.event_title}</Link>
+          <Link key={e} href={`/dashboard/${e.event_id}`}>{e.event_title}</Link>
         ))}
       </ul>
     </div>
