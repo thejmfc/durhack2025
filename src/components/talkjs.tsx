@@ -20,6 +20,17 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
     const [files, setFiles] = useState<File[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string | undefined>(eventId);
 
+    // On first mount, if no eventId was provided, restore the last selected event from localStorage
+    useEffect(() => {
+        if (!eventId) {
+            try {
+                const last = localStorage.getItem("last_selected_event_id");
+                if (last) setSelectedEventId(last || undefined);
+            } catch {}
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const storageKey = useMemo(() => `chat_history_${selectedEventId || 'no_event'}`, [selectedEventId]);
 
     useEffect(() => {
@@ -34,6 +45,13 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
             localStorage.setItem(storageKey, JSON.stringify(messages));
         } catch {}
     }, [messages, storageKey]);
+
+    // Persist the last selected event id so navigating between pages restores the same chat scope
+    useEffect(() => {
+        try {
+            if (selectedEventId) localStorage.setItem("last_selected_event_id", selectedEventId);
+        } catch {}
+    }, [selectedEventId]);
 
     function onPickFiles(e: React.ChangeEvent<HTMLInputElement>) {
         if (!e.target.files) return;
@@ -88,7 +106,7 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
     const hasEvents = events && events.length > 0;
 
     return (
-        <div className="w-80 max-w-full p-4 rounded-2xl shadow-xl bg-white/70 backdrop-blur border border-white/40">
+        <div className="w-80 max-w-full p-4 rounded-2xl shadow-xl bg-white/70 backdrop-blur border border-white/40 flex flex-col">
             <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-semibold text-gray-800">AI Assistant</h3>
                 {hasEvents && (
@@ -126,7 +144,7 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
             )}
 
             <form
-                className="flex items-stretch gap-2"
+                className="flex items-stretch gap-2 flex-nowrap"
                 onSubmit={e => { e.preventDefault(); handleSend(); }}
             >
                 <label className="shrink-0 cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm">
@@ -134,7 +152,7 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                     <input type="file" className="hidden" multiple onChange={onPickFiles} />
                 </label>
                 <input
-                    className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 text-sm"
+                    className="flex-1 min-w-0 border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 text-sm"
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder={selectedEventId ? "Ask about your event…" : "Ask anything… (optional: pick an event)"}
@@ -142,7 +160,7 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                 />
                 <button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-60"
+                    className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-60"
                     disabled={loading}
                 >
                     Send

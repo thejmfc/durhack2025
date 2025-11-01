@@ -9,7 +9,7 @@ export default function ChatToggle({ eventId, events = [] }: { eventId?: string;
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="fixed bottom-6 right-24 md:right-6 z-50 flex flex-col items-end gap-3">
+        <div className="fixed bottom-24 right-24 sm:bottom-24 sm:right-24 md:bottom-20 md:right-6 z-50 flex flex-col items-end gap-3">
             <button
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-5 py-3 rounded-full shadow-lg mb-1 whitespace-nowrap"
                 onClick={() => setIsOpen(!isOpen)}
