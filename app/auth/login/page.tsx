@@ -3,24 +3,24 @@ import supabase from "@/Supabase";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 
-export default function Signup(){
+export default function Login(){
     const [formData, setFormData] = useState({email: "", password: ""})
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    async function handleSignup(e: React.FormEvent) {
+    async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         console.log(formData)
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
             email: formData.email,
             password: formData.password,
         });
 
         setLoading(false);
 
-        if (signUpError) {
-            setError(signUpError.message);
+        if (loginError) {
+            setError(loginError.message);
             return;
         } else {
             redirect("/dashboard"); 
@@ -37,10 +37,10 @@ export default function Signup(){
     };
 
     return (
-        <form onSubmit={handleSignup}>
+        <form onSubmit={handleLogin}>
             <input type="email" name="email" onChange={handleChange} placeholder="Email" />
             <input type="password" name="password" onChange={handleChange} placeholder="Password" />
-            <button className={`${loading ? 'disabled' : ''}`}>{loading ? 'Loading...' : 'Signup'}</button>
+            <button className={`${loading ? 'disabled' : ''}`}>{loading ? 'Loading...' : 'Login'}</button>
             {error}
         </form>
 
