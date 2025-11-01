@@ -1,4 +1,5 @@
 "use client";
+import LogoutButton from "@/components/logoutButton";
 import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
@@ -53,11 +54,12 @@ export default function EventInspect() {
         return <p>Hacker Experience content for {event.event_title}</p>;
       default:
         return <p>Select a page from the sidebar.</p>;
+      case "log-out":
     }
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <><div><LogoutButton /></div><div style={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar Navigation */}
       <nav
         style={{
@@ -120,6 +122,6 @@ export default function EventInspect() {
         </h1>
         {renderContent()}
       </main>
-    </div>
+    </div></>
   );
 }
