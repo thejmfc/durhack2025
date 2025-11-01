@@ -4,6 +4,7 @@ import EventCard from "../../components/event_card"
 import supabase from "@/Supabase";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import LogoutButton from "@/components/logoutButton";
 
 export default function Dashboard() {
   const { user, session } = useAuth();
@@ -41,6 +42,7 @@ export default function Dashboard() {
     
     return (
         <section className="flex flex-col w-full">
+            <LogoutButton />
             <h1 className="text-4xl text-center m-5">Welcome back {(user?.email)?.split("@")[0]}!</h1>
 
             {nextUpcoming &&
