@@ -5,6 +5,19 @@ import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register Chart.js modules
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function EventLogistics() {
   const { user } = useAuth();
@@ -94,6 +107,33 @@ export default function EventLogistics() {
     }
   }
 
+  const chartData = {
+    labels: ["Income", "Withdrawal"],
+    datasets: [
+      {
+        label: "Amount",
+        data: [
+          incomes.reduce((sum, item) => sum + Number(item.expense_amount), 0),
+          withdrawals.reduce((sum, item) => sum + Number(item.expense_amount), 0),
+        ],
+        backgroundColor: ["#4ade80", "#f87171"], // green for income, red for withdrawal
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Income vs Withdrawal",
+      },
+    },
+  };
+
   return (
     <>
       <div>
@@ -110,10 +150,8 @@ export default function EventLogistics() {
 
           {!loading && !error && (
             <div className="w-full space-y-8">
-              <div className="w-full bg-gray-300 h-1/5 min-h-1/5">
-
-              {incomes.reduce((sum, item) => sum + item.expense_amount, 0) - withdrawals.reduce((sum, item) => sum + item.expense_amount, 0)}
-
+              <div className="w-full max-w-lg">
+                <Bar data={chartData} options={chartOptions} />
               </div>
           
               <form
@@ -121,7 +159,7 @@ export default function EventLogistics() {
                 className="flex flex-wrap items-end gap-4 bg-white p-4 rounded-2xl shadow-md"
               >
                 <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-700">title</label>
+                  <label className="text-sm font-medium text-gray-700">Title</label>
                   <input
                     type="text"
                     name="title"
