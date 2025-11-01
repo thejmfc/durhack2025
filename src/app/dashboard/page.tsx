@@ -4,6 +4,7 @@ import EventCard from "../../components/event_card"
 import supabase from "@/Supabase";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import EventCreate from "@/components/event_create";
 
 export default function Dashboard() {
   const { user, session } = useAuth();
@@ -38,17 +39,20 @@ export default function Dashboard() {
 
     
     return (
-        <section className="flex">
-            {events.map((e) => (
-                <EventCard 
-                    event_title={e.event_title}
-                    event_location={e.event_location}
-                    start_date={e.event_start_date}
-                    end_date={e.event_end_date}
-                    event_description={e.event_description}
-                />
+        <div>
+            <section className="flex">
+                {events.map((e) => (
+                    <EventCard 
+                        event_title={e.event_title}
+                        event_location={e.event_location}
+                        start_date={e.event_start_date}
+                        end_date={e.event_end_date}
+                        event_description={e.event_description}
+                    />
 
-            ))}
-        </section>
+                ))}
+            </section>
+            <EventCreate />
+        </div>
     )
 }
