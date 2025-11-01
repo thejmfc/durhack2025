@@ -2,8 +2,7 @@
 import DashboardSidebar from "@/components/dashboardSidebar";
 import LogoutButton from "@/components/logoutButton";
 import OrganiserCard from "@/components/organiser";
-import AddOrganiser from "@/components/organiser_add";
-import OrganiserList from "@/components/organiserList";
+import AddOrganiser from "@/components/addOrganiser";
 import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
