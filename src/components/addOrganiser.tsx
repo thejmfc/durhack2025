@@ -50,8 +50,8 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
       if (error) throw error;
 
       console.log("Organiser created:", data);
-
       router.refresh();
+      
     } catch (err: any) {
       console.error("Error creating organiser:", err);
       setError(err.message);
