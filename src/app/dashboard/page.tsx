@@ -44,45 +44,55 @@ export default function Dashboard() {
       .sort((a, b) => new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime())[0];
       
     return (
-        <section className="flex flex-col w-full">
+        <section className="flex flex-col w-full h-dvh bg-gradient-to-br from-blue-300 to-purple-300">
             <LogoutButton />
             <h1 className="text-4xl text-center m-5">Welcome back {(user?.email)?.split("@")[0]}!</h1>
 
-            {nextUpcoming &&
-                <Link href={`/dashboard/${nextUpcoming.event_id}`} key={nextUpcoming.event_id} className="w-full justify-center flex mb-5">
-                    <div id="nextUpcoming" className="w-5/6 rounded-xl bg-gray-400 px-2 py-5 flex align-middle justify-between">
-                        <h2 className="text-xl font-bold">Next Event: {nextUpcoming.event_title}</h2>
-                      <p className="mr-5">In {Math.ceil((new Date(nextUpcoming.event_start_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days</p>
-                    </div>
-                </Link>
-            }
+            {loading && <p>Loading...</p>}
 
-            {sortedEvents.length == 0 && 
+            {!loading && sortedEvents.length == 0 && 
                 <h2 className="text-center mt-15">You have no events! Add one now</h2>
             }
 
-            <div className="w-full flex flex-col items-center">
+            {!loading && 
+            <>
+
+                {nextUpcoming &&
+                    <Link href={`/dashboard/${nextUpcoming.event_id}`} key={nextUpcoming.event_id} className="w-full justify-center flex mb-5">
+                        <div id="nextUpcoming" className="w-5/6 rounded-2xl bg-white bg-opacity-20 backdrop-blur-lg border border-white border-opacity-30 shadow-xl px-6 py-6 flex items-center justify-between hover:bg-opacity-30 transition duration-300">
+                            <h2 className="text-xl font-bold text-gray-900">Next Event: {nextUpcoming.event_title}</h2>
+                            <p className="mr-5 text-gray-700 font-semibold">In {Math.ceil((new Date(nextUpcoming.event_start_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days</p>
+                        </div>
+                    </Link>
+                }
+
+            
 
 
-                <div className="grid grid-cols-3 w-5/6 gap-2 mb-5">
+                <div className="w-full flex flex-col items-center">
 
-                    {sortedEvents.map((e) => (
-                        <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
-                            <EventCard 
-                                event_title={e.event_title}
-                                event_location={e.event_location}
-                                start_date={e.event_start_date}
-                                end_date={e.event_end_date}
-                                event_description={e.event_description}
-                                />
-                        </Link>
-                    ))}
 
+                    <div className="grid grid-cols-3 w-5/6 gap-2 mb-5">
+
+                        {sortedEvents.map((e) => (
+                            <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
+                                <EventCard 
+                                    event_title={e.event_title}
+                                    event_location={e.event_location}
+                                    start_date={e.event_start_date}
+                                    end_date={e.event_end_date}
+                                    event_description={e.event_description}
+                                    />
+                            </Link>
+                        ))}
+
+                    </div>
                 </div>
-            </div>
+            </>
+            }
 
             <EventCreate />
-       
+                    
         </section>
     )
 }
