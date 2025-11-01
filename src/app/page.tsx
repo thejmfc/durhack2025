@@ -26,18 +26,18 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
         <Box className="backdrop-blur-sm bg-white/10 rounded-xl p-6 transform hover:scale-105 transition-all duration-300">
           <h3 className="text-xl font-bold text-white mb-2">Amazing Platform</h3>
-          <p className="text-purple-100">"Found my dream team here. The collaboration tools are fantastic!"</p>
-          <p className="text-purple-200 mt-2">- Sarah K.</p>
+          <p className="text-purple-100">"This is really good."</p>
+          <p className="text-purple-200 mt-2">- Emma N.</p>
         </Box>
         <Box className="backdrop-blur-sm bg-white/10 rounded-xl p-6 transform hover:scale-105 transition-all duration-300">
           <h3 className="text-xl font-bold text-white mb-2">Great Experience</h3>
-          <p className="text-purple-100">"Perfect for connecting with other passionate developers."</p>
-          <p className="text-purple-200 mt-2">- Mike R.</p>
+          <p className="text-purple-100">"Top tier tool!"</p>
+          <p className="text-purple-200 mt-2">- James M.</p>
         </Box>
         <Box className="backdrop-blur-sm bg-white/10 rounded-xl p-6 transform hover:scale-105 transition-all duration-300">
           <h3 className="text-xl font-bold text-white mb-2">Highly Recommended</h3>
-          <p className="text-purple-100">"Made my hackathon journey so much smoother!"</p>
-          <p className="text-purple-200 mt-2">- Alex T.</p>
+          <p className="text-purple-100">"I loved the award winning* ai integration"</p>
+          <p className="text-purple-200 mt-2">- Prosanta G.</p>
         </Box>
         <div className="col-span-full flex justify-center items-center gap-4 mt-8">
           <a href="/auth/signup" className="px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full text-white font-bold transform hover:scale-105 transition-all duration-300 hover:shadow-lg">
