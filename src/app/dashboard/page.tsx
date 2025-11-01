@@ -31,6 +31,10 @@ export default function Dashboard() {
     console.log(events)
   }, [user]);
 
+    const sortedEvents = [...events].sort((a, b) => 
+        new Date(b.event_start_date).getTime() - new Date(a.event_start_date).getTime()
+    );
+
     const nextUpcoming = events
       .filter(e => new Date(e.event_start_date) > new Date())
       .sort((a, b) => new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime())[0];
@@ -41,9 +45,9 @@ export default function Dashboard() {
 
             {nextUpcoming &&
                 <Link href={`/dashboard/${nextUpcoming.event_id}`} key={nextUpcoming.event_id} className="w-full justify-center flex mb-5">
-                    <div id="nextUpcoming" className="w-5/6 rounded-xl bg-gray-400 px-2 py-5">
-                        <h2 className="">Next Event: {nextUpcoming.event_title}</h2>
-
+                    <div id="nextUpcoming" className="w-5/6 rounded-xl bg-gray-400 px-2 py-5 flex align-middle justify-between">
+                        <h2 className="text-xl font-bold">Next Event: {nextUpcoming.event_title}</h2>
+                      <p className="mr-5">In {Math.ceil((new Date(nextUpcoming.event_start_date) - Date.now()) / (1000 * 60 * 60 * 24))} Days</p>
                     </div>
                 </Link>
             }
@@ -53,7 +57,7 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-3 w-5/6 gap-2">
 
-                    {events.map((e) => (
+                    {sortedEvents.map((e) => (
                         <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
                             <EventCard 
                                 event_title={e.event_title}
