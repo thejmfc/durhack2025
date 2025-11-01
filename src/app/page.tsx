@@ -1,5 +1,5 @@
 "use client"
-import Chat from './dashboard/talkjs';
+import Chat from '../components/talkjs';
 
 export default function Home() {
   return (
