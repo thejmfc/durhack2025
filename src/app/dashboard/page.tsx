@@ -40,7 +40,7 @@ export default function Dashboard() {
     return (
         <section className="flex">
             {events.map((e) => (
-                <Link href={e.event_id} key={e.event_id}>
+                <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
                     <EventCard 
                         event_title={e.event_title}
                         event_location={e.event_location}
