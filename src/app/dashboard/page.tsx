@@ -1,34 +1,54 @@
 "use client"
 import { useAuth } from "@/context/AuthContext";
-import Link from "next/link";
 import EventCard from "../../components/event_card"
+import supabase from "@/Supabase";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export default function NavBar(){
-    const { user, session } = useAuth();
+export default function Dashboard() {
+  const { user, session } = useAuth();
+
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchEvents = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("hackathons")
+        .select("*")
+        .eq("event_owner", user.id);
+
+      if (error) setError(error.message);
+      else setEvents(data ?? []);
+      setLoading(false);
+    };
+
+    fetchEvents();
+    console.log(events)
+  }, [user]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  if (events.length === 0) return <p>No events found for this user.</p>;
+
     
     return (
         <section className="flex">
-            <EventCard 
-                event_title="HackSheffield10"
-                event_location="Sheffield, UK"
-                start_date="29/11/25"
-                end_date="30/11/25"
-                event_description="The best hackathon ever led by the coolest person."
-            />
-            <EventCard 
-                event_title="DurHackX"
-                event_location="Durham, UK"
-                start_date="01/11/25"
-                end_date="02/11/25"
-                event_description="Pretty good hacakthon, with a great graphic designer."
-            />
-            <EventCard 
-                event_title="ICHack"
-                event_location="London, UK"
-                start_date="16/03/25"
-                end_date="17/03/25"
-                event_description="Impossible to get tickets for, harder than the eras tour."
-            />
+            {events.map((e) => (
+                <EventCard 
+                    event_title={e.event_title}
+                    event_location={e.event_location}
+                    start_date={e.event_start_date}
+                    end_date={e.event_end_date}
+                    event_description={e.event_description}
+                />
+
+            ))}
         </section>
     )
 }
