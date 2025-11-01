@@ -1,11 +1,12 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
+import EventCard from "../../components/event_card"
 import supabase from "@/Supabase";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
 
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,14 +36,19 @@ export default function Dashboard() {
 
   if (events.length === 0) return <p>No events found for this user.</p>;
 
-  return (
-    <div>
-      <h2>Events owned by {user?.email}</h2>
-      <ul className="space-y-2">
-        {events.map((e) => (
-          <Link key={e} href={`/dashboard/${e.event_id}`}>{e.event_title}</Link>
-        ))}
-      </ul>
-    </div>
-  );
+    
+    return (
+        <section className="flex">
+            {events.map((e) => (
+                <EventCard 
+                    event_title={e.event_title}
+                    event_location={e.event_location}
+                    start_date={e.event_start_date}
+                    end_date={e.event_end_date}
+                    event_description={e.event_description}
+                />
+
+            ))}
+        </section>
+    )
 }
