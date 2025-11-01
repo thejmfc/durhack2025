@@ -12,7 +12,7 @@ export default function RequireGuest({ children } : { children: ReactNode }){
 
     useEffect(() => {
         if (user) {
-            router.replace("/")
+            router.replace("/dashboard")
         } else {
             setChecked(true)
         }
