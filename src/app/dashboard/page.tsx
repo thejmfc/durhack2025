@@ -1,5 +1,6 @@
-
+"use client"
 import { useAuth } from "@/context/AuthContext";
+import supabase from "@/Supabase";
 import Link from "next/link";
 
 export default function NavBar(){
@@ -44,12 +45,12 @@ export default function NavBar(){
                     <div className="flex gap-2 ml-auto">
                         
                         <Link 
-                            href={"/auth?v=login"}
+                            href={"/auth/login"}
                             className="px-7 py-2 rounded-2xl border border-gray-400 hover:rounded-md transition-all duration-200"
                         >Login</Link>
 
                         <Link 
-                            href={"/auth?v=signup"}
+                            href={"/auth/signup"}
                             className="px-7 py-2 rounded-2xl border border-gray-400 hover:rounded-md transition-all duration-200"
                         >Signup</Link>
 
