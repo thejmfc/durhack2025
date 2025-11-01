@@ -2,13 +2,14 @@ import { ReactNode } from "react";
 
 interface BoxProps {
     children: ReactNode;
-    classname?: string;
+    className?: string;
 }
 
-export default function Box({ children, classname= ""}: BoxProps) {
+export default function Box({ children, className = "" }: BoxProps) {
     return (
-        <div className={`p-4 rounded-lg border bg-white shadow ${classname}`}>
+        <div className={`p-4 rounded-lg border bg-white shadow cursor-pointer transition hover:bg-blue-50 ${className}`}>
             {children}
         </div>
     )
 }
+
