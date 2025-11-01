@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { IoIosArrowBack } from "react-icons/io";
 
 export default function DashboardSidebar({ uuid }: { uuid: string }) {
   const pathname = usePathname();
@@ -16,7 +17,10 @@ export default function DashboardSidebar({ uuid }: { uuid: string }) {
 
   return (
     <nav className="w-56 bg-gray-900 text-white p-8 flex flex-col gap-8">
-      <div className="font-bold text-2xl mb-8">HackSmith</div>
+        <div className="flex align-middle items-center mb-8">
+            <Link href={"/dashboard"} className="mr-2"><IoIosArrowBack className="text-2xl" /></Link>
+            <div className="font-bold text-2xl">HackSmith</div>
+        </div>
 
       <ul className="flex flex-col gap-3">
         {items.map(({ name, path }) => {
