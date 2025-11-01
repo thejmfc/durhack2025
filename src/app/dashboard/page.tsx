@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useAuth } from "@/context/AuthContext";
 import EventCard from "../../components/event_card"
 import supabase from "@/Supabase";
