@@ -1,5 +1,5 @@
 "use client"
-import supabase from "@/src/Supabase";
+import supabase from "@/Supabase";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 

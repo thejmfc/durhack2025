@@ -1,4 +1,4 @@
-import RequireGuest from "@/src/context/RequireGuest";
+import RequireGuest from "@/context/RequireGuest";
 
 export default function AuthLayout({
   children,
