@@ -31,26 +31,42 @@ export default function Dashboard() {
     console.log(events)
   }, [user]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
-  if (events.length === 0) return <p>No events found for this user.</p>;
-
+    const nextUpcoming = events
+      .filter(e => new Date(e.event_start_date) > new Date())
+      .sort((a, b) => new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime())[0];
     
     return (
-        <section className="flex">
-            {events.map((e) => (
-                <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
-                    <EventCard 
-                        event_title={e.event_title}
-                        event_location={e.event_location}
-                        start_date={e.event_start_date}
-                        end_date={e.event_end_date}
-                        event_description={e.event_description}
-                        />
-                </Link>
+        <section className="flex flex-col w-full">
+            <h1 className="text-4xl text-center m-5">Welcome back {(user?.email)?.split("@")[0]}!</h1>
 
-            ))}
+            {nextUpcoming &&
+                <Link href={`/dashboard/${nextUpcoming.event_id}`} key={nextUpcoming.event_id} className="w-full justify-center flex mb-5">
+                    <div id="nextUpcoming" className="w-5/6 rounded-xl bg-gray-400 px-2 py-5">
+                        <h2 className="">Next Event: {nextUpcoming.event_title}</h2>
+
+                    </div>
+                </Link>
+            }
+
+            <div className="w-full flex flex-col items-center">
+
+
+                <div className="grid grid-cols-3 w-5/6 gap-2">
+
+                    {events.map((e) => (
+                        <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
+                            <EventCard 
+                                event_title={e.event_title}
+                                event_location={e.event_location}
+                                start_date={e.event_start_date}
+                                end_date={e.event_end_date}
+                                event_description={e.event_description}
+                                />
+                        </Link>
+                    ))}
+
+                </div>
+            </div>
         </section>
     )
 }
