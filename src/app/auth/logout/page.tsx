@@ -1,3 +1,4 @@
+"use client"
 import supabase from "@/Supabase";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
