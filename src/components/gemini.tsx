@@ -1,7 +1,10 @@
+// Gemini API call from here
+
 import { GoogleGenAI } from '@google/genai';
 
 const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
 
+// Prompt Engineering
 const hackathonContext = "You are a helpful chatbot assistant, for a website that is designed for helping Hackathon Organisers plan a hackathon." +
     "They may ask things about event logistics, planning, rules and workshops." +
     "Please keep your answers short, concise and relevant (no more than about 6~7 short sentences)."
