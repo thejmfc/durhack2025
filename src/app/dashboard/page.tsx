@@ -44,7 +44,7 @@ export default function Dashboard() {
       .sort((a, b) => new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime())[0];
       
     return (
-        <section className="flex flex-col w-full h-dvh bg-gradient-to-br from-blue-300 to-purple-300">
+        <section className="flex flex-col w-full h-full bg-gradient-to-br from-blue-300 to-purple-300">
             <LogoutButton />
             <h1 className="text-4xl text-center m-5">Welcome back {(user?.email)?.split("@")[0]}!</h1>
 
