@@ -33,8 +33,8 @@ export default function EventLogistics() {
     fetchExpenses();
   }, [user, params.event]);
 
-  const incomes = expenses.filter((e) => e.expense_type === "income");
-  const withdrawals = expenses.filter((e) => e.expense_type === "withdrawal");
+  const incomes = expenses.filter((e) => (e.expense_type).toLowerCase() === "income");
+  const withdrawals = expenses.filter((e) => (e.expense_type).toLowerCase() === "withdrawal");
 
   const [expenseForm, setExpenseForm] = useState({
     title: "",
@@ -110,6 +110,12 @@ export default function EventLogistics() {
 
           {!loading && !error && (
             <div className="w-full space-y-8">
+              <div className="w-full bg-gray-300 h-1/5 min-h-1/5">
+
+              {incomes.reduce((sum, item) => sum + item.expense_amount, 0) - withdrawals.reduce((sum, item) => sum + item.expense_amount, 0)}
+
+              </div>
+          
               <form
                 onSubmit={handleNewExpense}
                 className="flex flex-wrap items-end gap-4 bg-white p-4 rounded-2xl shadow-md"
@@ -175,6 +181,49 @@ export default function EventLogistics() {
               </form>
 
               <section>
+                <h2 className="text-2xl font-semibold mb-4">Income</h2>
+                <div className="overflow-x-auto rounded-2xl shadow">
+                  <table className="w-full text-sm text-left border-collapse">
+                    <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+                      <tr>
+                        <th className="px-4 py-3 border-b">title</th>
+                        <th className="px-4 py-3 border-b">Amount</th>
+                        <th className="px-4 py-3 border-b">Date</th>
+                        <th className="px-4 py-3 border-b text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {incomes.map((e, idx) => (
+                        <tr
+                          key={e.expense_id || idx}
+                          className="odd:bg-white even:bg-gray-50 hover:bg-green-50 transition-colors"
+                        >
+                          <td className="px-4 py-2 border-b">
+                            {e.expense_title || "-"}
+                          </td>
+                          <td className="px-4 py-2 border-b">{e.expense_amount}</td>
+                          <td className="px-4 py-2 border-b">
+                            {e.expense_date
+                              ? new Date(e.expense_date).toLocaleDateString()
+                              : "-"}
+                          </td>
+                          <td className="px-4 py-2 border-b text-center">
+                            <button
+                              onClick={() => handleDelete(e.expense_id)}
+                              className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+
+              <section>
                 <h2 className="text-2xl font-semibold mb-4">Withdrawals</h2>
                 <div className="overflow-x-auto rounded-2xl shadow">
                   <table className="w-full text-sm text-left border-collapse">
@@ -216,47 +265,7 @@ export default function EventLogistics() {
                 </div>
               </section>
 
-              <section>
-                <h2 className="text-2xl font-semibold mb-4">Income</h2>
-                <div className="overflow-x-auto rounded-2xl shadow">
-                  <table className="w-full text-sm text-left border-collapse">
-                    <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
-                      <tr>
-                        <th className="px-4 py-3 border-b">title</th>
-                        <th className="px-4 py-3 border-b">Amount</th>
-                        <th className="px-4 py-3 border-b">Date</th>
-                        <th className="px-4 py-3 border-b text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {incomes.map((e, idx) => (
-                        <tr
-                          key={e.expense_id || idx}
-                          className="odd:bg-white even:bg-gray-50 hover:bg-green-50 transition-colors"
-                        >
-                          <td className="px-4 py-2 border-b">
-                            {e.expense_title || "-"}
-                          </td>
-                          <td className="px-4 py-2 border-b">{e.expense_amount}</td>
-                          <td className="px-4 py-2 border-b">
-                            {e.expense_date
-                              ? new Date(e.expense_date).toLocaleDateString()
-                              : "-"}
-                          </td>
-                          <td className="px-4 py-2 border-b text-center">
-                            <button
-                              onClick={() => handleDelete(e.expense_id)}
-                              className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+              
             </div>
           )}
         </main>
