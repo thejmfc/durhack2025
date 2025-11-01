@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 import EventCreate from "@/components/event_create";
 import LogoutButton from "@/components/logoutButton";
-
+import ChatToggle from "@/components/chattoggle";
 
 export default function Dashboard() {
   const { user, session } = useAuth();
@@ -92,7 +92,9 @@ export default function Dashboard() {
             }
 
             <EventCreate />
-                    
+
+            {/* Floating AI chat assistant available on all dashboard pages */}
+            <ChatToggle events={events.map(e => ({ event_id: e.event_id, event_title: e.event_title }))} />
         </section>
     )
 }
