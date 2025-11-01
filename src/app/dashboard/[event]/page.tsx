@@ -13,7 +13,6 @@ export default function EventInspect() {
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activePage, setActivePage] = useState("overview");
 
   useEffect(() => {
     if (!user) return;
