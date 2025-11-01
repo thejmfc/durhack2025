@@ -2,12 +2,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-
 export default function DashboardSidebar({ uuid }: { uuid: string }) {
   const pathname = usePathname();
 
   const items = [
-    { name: "Overview", path: "overview" },
+    { name: "Overview", path: "" },
     { name: "Logistics", path: "logistics" },
     { name: "Finance", path: "finance" },
     { name: "Sponsors", path: "sponsors" },
@@ -21,8 +20,9 @@ export default function DashboardSidebar({ uuid }: { uuid: string }) {
 
       <ul className="flex flex-col gap-3">
         {items.map(({ name, path }) => {
-          const fullPath = `/dashboard/${uuid}/${path}`;
-          const isActive = pathname === fullPath;
+          const fullPath = path ? `/dashboard/${uuid}/${path}` : `/dashboard/${uuid}`;
+          const normalizedPathname = pathname?.replace(/\/$/, "");
+          const isActive = normalizedPathname === fullPath;
 
           return (
             <li key={name}>
