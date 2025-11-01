@@ -52,7 +52,7 @@ export default function Dashboard() {
                 <Link href={`/dashboard/${nextUpcoming.event_id}`} key={nextUpcoming.event_id} className="w-full justify-center flex mb-5">
                     <div id="nextUpcoming" className="w-5/6 rounded-xl bg-gray-400 px-2 py-5 flex align-middle justify-between">
                         <h2 className="text-xl font-bold">Next Event: {nextUpcoming.event_title}</h2>
-                      <p className="mr-5">In {Math.ceil((new Date(nextUpcoming.event_start_date) - Date.now()) / (1000 * 60 * 60 * 24))} Days</p>
+                      <p className="mr-5">In {Math.ceil((new Date(nextUpcoming.event_start_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days</p>
                     </div>
                 </Link>
             }
