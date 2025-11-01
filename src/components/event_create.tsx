@@ -20,8 +20,8 @@ export default function EventCreate() {
         {
             event_title: "",
             event_location: "",
-            event_start_date: "",
-            event_end_date: "",
+            event_start_date: new Date(),
+            event_end_date: new Date(),
             event_description: "",
         }
     )
