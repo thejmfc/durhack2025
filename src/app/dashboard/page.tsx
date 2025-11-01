@@ -54,6 +54,10 @@ export default function Dashboard() {
                 </Link>
             }
 
+            {sortedEvents.length == 0 && 
+                <h2 className="text-center mt-15">You have no events! Add one now</h2>
+            }
+
             <div className="w-full flex flex-col items-center">
 
 
