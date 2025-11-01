@@ -1,6 +1,9 @@
 "use client";
 import DashboardSidebar from "@/components/dashboardSidebar";
 import LogoutButton from "@/components/logoutButton";
+import OrganiserCard from "@/components/organiser";
+import AddOrganiser from "@/components/organiser_add";
+import OrganiserList from "@/components/organiserList";
 import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
@@ -10,28 +13,34 @@ export default function EventLogistics() {
   const { user } = useAuth();
   const params = useParams();
 
-  const [event, setEvent] = useState<any>(null);
+  const [organisers, setOrganisers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
 
-    const fetchEvent = async () => {
+    const fetchOrganisers = async (uuid : string) => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("hackathons")
-        .select("*")
-        .eq("event_id", params.event)
-        .single();
+      setError(null);
 
-      if (error) setError(error.message);
-      else setEvent(data ?? []);
+      const { data, error } = await supabase
+        .from("organiser")
+        .select("*")
+        .eq("event_id", uuid);
+
+      if (error) {
+        setError(error.message);
+        setOrganisers([]);
+      } else {
+        setOrganisers(data ?? []);
+      }
+
       setLoading(false);
     };
 
-    fetchEvent();
-  }, [user]);
+    fetchOrganisers(params.event as string);
+  }, [params.event as string]);
 
   return (
     <><div><LogoutButton /></div><div style={{ display: "flex", minHeight: "100vh" }}>
@@ -47,6 +56,17 @@ export default function EventLogistics() {
         {error && <p>{error}</p>}
         {!loading && !error && 
         <>
+          <AddOrganiser uuid={params.event as string}/>
+          {organisers.map((e) => (
+            <OrganiserCard 
+              key={e}
+              first_name={e.first_name}
+              last_name={e.last_name}
+              phone_number={e.phone_number}
+              email_address={e.email_address}
+              role={e.role}
+            />
+          ))}
         </>
         }
       </main>
