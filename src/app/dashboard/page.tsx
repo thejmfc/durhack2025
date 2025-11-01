@@ -4,7 +4,10 @@ import EventCard from "../../components/event_card"
 import supabase from "@/Supabase";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
+import EventCreate from "@/components/event_create";
 import LogoutButton from "@/components/logoutButton";
+
 
 export default function Dashboard() {
   const { user, session } = useAuth();
@@ -77,6 +80,7 @@ export default function Dashboard() {
 
                 </div>
             </div>
+       
         </section>
     )
 }
