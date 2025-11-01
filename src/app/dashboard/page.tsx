@@ -64,7 +64,7 @@ export default function Dashboard() {
             <div className="w-full flex flex-col items-center">
 
 
-                <div className="grid grid-cols-3 w-5/6 gap-2">
+                <div className="grid grid-cols-3 w-5/6 gap-2 mb-5">
 
                     {sortedEvents.map((e) => (
                         <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
