@@ -1,8 +1,8 @@
 "use client"
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
-import supabase from '@/src/Supabase'
-import { AuthContextType } from '@/src/types/context';
+import supabase from '@/Supabase'
+import { AuthContextType } from '@/types/context';
 
 const AuthContext = createContext<AuthContextType>({
   user: null,

@@ -2,7 +2,6 @@
 import Chat from '../components/talkjs';
 import Box from '../components/box';
 
-
 export default function Home() {
   return (
       <div>
