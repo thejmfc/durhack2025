@@ -40,13 +40,15 @@ export default function Dashboard() {
     return (
         <section className="flex">
             {events.map((e) => (
-                <EventCard 
-                    event_title={e.event_title}
-                    event_location={e.event_location}
-                    start_date={e.event_start_date}
-                    end_date={e.event_end_date}
-                    event_description={e.event_description}
-                />
+                <Link href={e.event_id} key={e.event_id}>
+                    <EventCard 
+                        event_title={e.event_title}
+                        event_location={e.event_location}
+                        start_date={e.event_start_date}
+                        end_date={e.event_end_date}
+                        event_description={e.event_description}
+                        />
+                </Link>
 
             ))}
         </section>
