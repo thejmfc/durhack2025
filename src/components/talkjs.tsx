@@ -179,14 +179,21 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
         setLoading(true);
         await saveMessage("user", userMsg);
 
+        // Build conversation history for context
+        const historyContext = messages
+            .map(m => `${m.sender === "user" ? "User" : "Assistant"}: ${m.text}`)
+            .join("\n");
+
         const filesContext = await buildFilesContext();
+        const fullContext = [historyContext, filesContext].filter(Boolean).join("\n\n");
+
         const res = await fetch("/api/askGemini", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 question: input || "Consider the attached files and provide insights.",
                 eventId: selectedEventId,
-                context: filesContext || undefined,
+                context: fullContext || undefined,
             }),
         });
         const data = await res.json();
