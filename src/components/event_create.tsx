@@ -75,7 +75,7 @@ export default function EventCreate() {
     
     return (
         <>
-            <div onClick={() => setIsModalOpen(true)} className="fixed bottom-5 right-5 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg hover:cursor-pointer">
+            <div onClick={() => setIsModalOpen(true)} className="fixed bottom-5 left-5 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg hover:cursor-pointer">
                 <IoIosAddCircle color="white" size={48} />
             </div>
 
