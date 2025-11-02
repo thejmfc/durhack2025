@@ -1,18 +1,19 @@
-"use client"
+"use client";
 import supabase from "@/Supabase";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 
-export default function Login(){
-    const [formData, setFormData] = useState({email: "", password: ""})
+export default function Login() {
+    const [formData, setFormData] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
-        console.log(formData)
-        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+        setError(null);
+
+        const {error: loginError } = await supabase.auth.signInWithPassword({
             email: formData.email,
             password: formData.password,
         });
@@ -23,63 +24,93 @@ export default function Login(){
             setError(loginError.message);
             return;
         } else {
-            redirect("/dashboard"); 
+            redirect("/dashboard");
         }
-
     }
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
         setFormData(prev => ({
-        ...prev,
-        [name]: value
+            ...prev,
+            [name]: value,
         }));
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-xl">
-            <div>
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                HackSmith
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-100 via-indigo-200 to-blue-200 animate-bgGradientSlow py-12 px-4 sm:px-6 lg:px-8 relative">
+            <div className="max-w-md w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 space-y-8 relative z-10">
+                <h2 className="text-center text-3xl font-extrabold text-gray-900 tracking-tight mb-2" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                    HackSmith
                 </h2>
+                <p className="text-center text-gray-700 mb-8 font-light">
+                    Log in to your account
+                </p>
+                <form className="space-y-6" onSubmit={handleLogin} noValidate>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
+                            Email Address
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            autoComplete="email"
+                            placeholder="you@example.com"
+                            className="block w-full rounded-md border border-gray-300 px-4 py-2 placeholder-gray-400 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none focus:ring-2 sm:text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            autoComplete="current-password"
+                            placeholder="••••••••"
+                            className="block w-full rounded-md border border-gray-300 px-4 py-2 placeholder-gray-400 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none focus:ring-2 sm:text-sm"
+                        />
+                    </div>
+
+                    {error && (
+                        <p className="mt-2 text-sm text-red-600 text-center" role="alert">
+                            {error}
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full flex justify-center py-3 rounded-md text-white font-semibold transition ${
+                            loading ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-400"
+                        }`}
+                    >
+                        {loading ? "Signing in..." : "Sign in"}
+                    </button>
+                </form>
             </div>
-            <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-                <div className="rounded-md shadow-sm -space-y-px">
-                <div>
-                    <input
-                    type="email"
-                    name="email"
-                    onChange={handleChange}
-                    placeholder="Email address"
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    />
-                </div>
-                <div>
-                    <input
-                    type="password"
-                    name="password"
-                    onChange={handleChange}
-                    placeholder="Password"
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    />
-                </div>
-                </div>
-                <div>
-                <button
-                    className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 transition-colors duration-150 ease-in-out hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={loading}
-                >
-                    {loading ? 'Loading...' : 'Sign in'}
-                </button>
-                </div>
-                {error && (
-                <div className="text-red-500 text-sm text-center">
-                    {error}
-                </div>
-                )}
-            </form>
-            </div>
+            <style>{`
+        @keyframes bgGradientSlow {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+        .animate-bgGradientSlow {
+          background-size: 200% 200%;
+          animation: bgGradientSlow 40s ease infinite;
+        }
+      `}</style>
         </div>
     );
 }

@@ -114,7 +114,7 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
             {/* Header */}
             <div className="flex items-center gap-2 mb-4 mt-2 relative z-10">
                 <h3 className="font-bold text-gray-700 text-lg tracking-tight flex items-center gap-2">
-                    <span></span> Event Assistant
+                    <span></span> {(hasEvents && !eventId) ? "Dashboard Assistant" : "Event Assistant"}
                 </h3>
                 {hasEvents && (
                     <select
