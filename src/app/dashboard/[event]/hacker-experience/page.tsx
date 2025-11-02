@@ -187,12 +187,21 @@ export default function EventLogistics() {
                   <button type="submit" className="bg-blue-600 text-white rounded-lg px-8 py-2 font-semibold hover:bg-blue-700 transition min-w-[90px]">Add</button>
                 </form>
                 <ul className="mt-2">
-                  {timetable.map((entry, idx) => (
-                    <li key={idx} className="mb-2 flex items-center justify-between text-base">
-                      <span><b className="text-blue-600">{entry.time}</b> - <span className="font-semibold">{entry.title}</span>: {entry.description}</span>
-                      <button onClick={() => handleRemoveTimetable(idx)} className="ml-4 bg-red-100 text-red-700 border-0 rounded-md px-4 py-1.5 font-medium hover:bg-red-200 transition">Remove</button>
-                    </li>
-                  ))}
+                  {[...timetable]
+                    .sort((a, b) => {
+                      // If time is in HH:mm format, string compare works
+                      if (typeof a.time === 'string' && typeof b.time === 'string') {
+                        return a.time.localeCompare(b.time);
+                      }
+                      // fallback: compare as numbers if possible
+                      return (a.time || 0) - (b.time || 0);
+                    })
+                    .map((entry, idx) => (
+                      <li key={idx} className="mb-2 flex items-center justify-between text-base">
+                        <span><b className="text-blue-600">{entry.time}</b> - <span className="font-semibold">{entry.title}</span>: {entry.description}</span>
+                        <button onClick={() => handleRemoveTimetable(idx)} className="ml-4 bg-red-100 text-red-700 border-0 rounded-md px-4 py-1.5 font-medium hover:bg-red-200 transition">Remove</button>
+                      </li>
+                    ))}
                 </ul>
               </section>
 
