@@ -65,7 +65,7 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
       className="max-w-md mx-auto bg-white shadow-md rounded-xl p-6 space-y-4"
     >
       <h2 className="text-lg font-semibold text-gray-800">
-        Add Organiser for Event: {uuid}
+        Add Organiser
       </h2>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}

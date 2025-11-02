@@ -119,6 +119,7 @@ export default function EventLogistics() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: "top" as const,
@@ -152,6 +153,7 @@ export default function EventLogistics() {
 
   const WithdrawalPieChartOptions = {
     responsive: true,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: "top" as const,
@@ -187,6 +189,7 @@ export default function EventLogistics() {
 
   const IncomePieChartOptions = {
     responsive: true,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: "top" as const,
@@ -214,7 +217,7 @@ export default function EventLogistics() {
 
           {!loading && !error && (
             <div className="w-full space-y-8">
-              <div className="w-full flex h-1/3 min-h-1/3 max-h-1/3 justify-center items-center gap-x-15">
+              <div className="flex h-1/4 max-h-1/4 justify-center items-center">
                 <Bar data={chartData} options={chartOptions} />
               
                 <Pie data={WithdrawalPieChartData} options={WithdrawalPieChartOptions} />
