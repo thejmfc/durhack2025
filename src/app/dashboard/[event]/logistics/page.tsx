@@ -57,9 +57,9 @@ export default function EventLogistics() {
         <div className="flex w-full">
             <div className="w-full flex flex-col gap-2">
 
-                {organisers.map((e) => (
+                {organisers.map((e, idx) => (
                     <OrganiserCard 
-                    key={e}
+                    key={idx}
                     first_name={e.first_name}
                     last_name={e.last_name}
                     phone_number={e.phone_number}
