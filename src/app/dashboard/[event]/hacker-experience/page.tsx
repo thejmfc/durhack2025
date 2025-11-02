@@ -40,7 +40,7 @@ export default function EventLogistics() {
   const [challenges, setChallenges] = useState<any[]>([]);
 
   // Form state for adding new entries
-  const [newTimetable, setNewTimetable] = useState({ time: '', title: '', description: '' });
+  const [newTimetable, setNewTimetable] = useState({ datetime: '', title: '', description: '' });
   const [newMiniEvent, setNewMiniEvent] = useState({ title: '', description: '', host: '' });
   const [newPrize, setNewPrize] = useState({ title: '', description: '', suppliedBy: '' });
   const [newChallenge, setNewChallenge] = useState({ title: '', description: '', host: '' });
@@ -80,15 +80,16 @@ export default function EventLogistics() {
     e.preventDefault();
     setError(null);
     if (!params.event) return;
+    // Store as ISO string for timestamp
     const { data, error } = await supabase.from('timetable').upsert({
       event_id: params.event,
-      time: newTimetable.time,
+      timestamp: newTimetable.datetime ? new Date(newTimetable.datetime).toISOString() : null,
       title: newTimetable.title,
       description: newTimetable.description
     }).select();
     if (error) setError(error.message);
     if (!error && data) setTimetable(prev => [...prev, ...data]);
-    setNewTimetable({ time: '', title: '', description: '' });
+    setNewTimetable({ datetime: '', title: '', description: '' });
   };
   const handleRemoveTimetable = async (idx: number) => {
     const entry = timetable[idx];
@@ -176,11 +177,11 @@ export default function EventLogistics() {
                 <form onSubmit={handleAddTimetable} className="flex flex-row gap-4 my-4 w-full">
                   <input
                     required
-                    type="time"
-                    placeholder="Time"
-                    value={newTimetable.time}
-                    onChange={e => setNewTimetable({ ...newTimetable, time: e.target.value })}
-                    className="border border-gray-300 rounded-lg px-4 py-2 w-32 text-base"
+                    type="datetime-local"
+                    placeholder="Date & Time"
+                    value={newTimetable.datetime}
+                    onChange={e => setNewTimetable({ ...newTimetable, datetime: e.target.value })}
+                    className="border border-gray-300 rounded-lg px-4 py-2 w-56 text-base"
                   />
                   <input required placeholder="Title" value={newTimetable.title} onChange={e => setNewTimetable({ ...newTimetable, title: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
                   <input required placeholder="Description" value={newTimetable.description} onChange={e => setNewTimetable({ ...newTimetable, description: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
@@ -189,16 +190,20 @@ export default function EventLogistics() {
                 <ul className="mt-2">
                   {[...timetable]
                     .sort((a, b) => {
-                      // If time is in HH:mm format, string compare works
-                      if (typeof a.time === 'string' && typeof b.time === 'string') {
-                        return a.time.localeCompare(b.time);
+                      // Sort by timestamp (ISO string)
+                      if (a.timestamp && b.timestamp) {
+                        return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
                       }
-                      // fallback: compare as numbers if possible
-                      return (a.time || 0) - (b.time || 0);
+                      return 0;
                     })
                     .map((entry, idx) => (
                       <li key={idx} className="mb-2 flex items-center justify-between text-base">
-                        <span><b className="text-blue-600">{entry.time}</b> - <span className="font-semibold">{entry.title}</span>: {entry.description}</span>
+                        <span>
+                          <b className="text-blue-600">
+                            {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : 'No time'}
+                          </b>
+                          {' '} - <span className="font-semibold">{entry.title}</span>: {entry.description}
+                        </span>
                         <button onClick={() => handleRemoveTimetable(idx)} className="ml-4 bg-red-100 text-red-700 border-0 rounded-md px-4 py-1.5 font-medium hover:bg-red-200 transition">Remove</button>
                       </li>
                     ))}

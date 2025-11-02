@@ -2,64 +2,176 @@ import { NextRequest, NextResponse } from "next/server";
 import { askGemini } from "@/components/gemini";
 import supabase from "@/Supabase";
 
+// Command Handlers
+const commandHandlers: Record<string, Function> = {
+  async countAttendeesFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+    const res = await fetch(`${req.nextUrl.origin}/api/countAttendeesFunction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function countAttendeesFunction was called and returned the following result: ${JSON.stringify(data.result ?? data.count ?? data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async removeAttendeesFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+    const res = await fetch(`${req.nextUrl.origin}/api/removeAttendeesFunction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId, rules: args.rules }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function removeAttendeesFunction was called and returned the following result: ${JSON.stringify(data.result ?? data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async attendeesStatsFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+    const res = await fetch(`${req.nextUrl.origin}/api/attendeesStats`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function attendeesStatsFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async getAttendeesFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+    const res = await fetch(`${req.nextUrl.origin}/api/getAttendeesFunction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId, rules: args.rules }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function getAttendeesFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async getFinanceFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+   console.log(eventId)
+    const res = await fetch(`${req.nextUrl.origin}/api/getFinance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function getExpensesFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async insertFinanceFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+    const res = await fetch(`${req.nextUrl.origin}/api/insertFinance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId, financeField: args.financeField }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function insertFinanceFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async deleteFinanceFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+   console.log(eventId)
+    const res = await fetch(`${req.nextUrl.origin}/api/deleteFinance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId, expenseField: args.expenseField }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function deleteFinanceFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+};
+
 export async function POST(req: NextRequest) {
   try {
-    // Parse JSON body
     const body = await req.json();
     const question: string = body.question || "";
     const eventId: string | undefined = body.eventId;
     const extraContext: string = body.context || "";
 
-    let eventContext = "";
-    let organisersContext = "";
-    let sponsorContext = "";
-    let expenseContext = "";
-    let attendeeContext = "";
+    // Initialize combinedContext properly
+    const combinedContext = await fetchCombinedContext(eventId, extraContext);
 
-    if (eventId) {
-      // Fetch event details
-      const { data: event, error: eventError } = await supabase
-        .from("hackathons")
-        .select("*")
-        .eq("event_id", eventId) // adjust to Number(eventId) if your column is numeric
-        .single();
+    const geminiResult = await askGemini(question, combinedContext);
 
-      if (eventError) {
-        console.error("Error fetching event:", eventError.message);
-      } else if (event) {
-        const title = event.event_title || "(no title)";
-        const location = event.event_location || "(no location)";
-        const start = event.event_start_date || "(no start date)";
-        const end = event.event_end_date || "(no end date)";
-        const desc = event.event_description || "No description provided.";
+    if (typeof geminiResult === "object" && geminiResult.function_call) {
+      const { name, arguments: args } = geminiResult.function_call;
 
-        eventContext = `Event Title: ${title}\nEvent Location: ${location}\nEvent Start: ${start}\nEvent End: ${end}\nEvent Description: ${desc}`;
-      }
-
-      // Fetch organisers linked to this event
-      const { data: organisers, error: orgErr } = await supabase
-        .from("organiser")
-        .select("first_name,last_name,role,email_address,phone_number")
-        .eq("event_id", eventId)
-        .limit(50);
-
-      if (orgErr) {
-        console.error("Error fetching organisers:", orgErr.message);
-      } else if (organisers && organisers.length) {
-        const list = organisers
-          .map((o: any) => {
-            const name = [o.first_name, o.last_name].filter(Boolean).join(" ") || "(no name)";
-            const role = o.role ? ` (${o.role})` : "";
-            const contactParts = [o.email_address, o.phone_number].filter(Boolean);
-            const contact = contactParts.length ? ` – ${contactParts.join(" | ")}` : "";
-            return `• ${name}${role}${contact}`;
-          })
-          .join("\n");
-        organisersContext = `Organisers / Logistics team (max 50 listed):\n${list}`;
+      // Ensure name is a string
+      if (typeof name === "string") {
+        const handler = commandHandlers[name];
+        if (handler) {
+          return await handler(args, req, eventId, combinedContext, question);
+        } else {
+          return NextResponse.json({ error: `Unknown function call: ${name}` }, { status: 400 });
+        }
+      } else {
+        return NextResponse.json({ error: "Invalid function call name" }, { status: 400 });
       }
     }
 
-    // Fetch finance data to this event
+    return NextResponse.json({ answer: typeof geminiResult === "string" ? geminiResult : JSON.stringify(geminiResult) });
+  } catch (e: any) {
+    console.error("Unexpected error:", e);
+    return NextResponse.json({ error: e?.message || "Unexpected error" }, { status: 400 });
+  }
+}
+
+// Utility function to fetch combined context
+async function fetchCombinedContext(eventId: string | undefined, extraContext: string): Promise<string> {
+  let eventContext = "";
+  let organisersContext = "";
+  let sponsorContext = "";
+  let expenseContext = "";
+  let attendeeContext = "";
+
+  if (eventId) {
+    const { data: event, error: eventError } = await supabase
+      .from("hackathons")
+      .select("*")
+      .eq("event_id", eventId)
+      .single();
+
+    if (!eventError && event) {
+      const title = event.event_title || "(no title)";
+      const location = event.event_location || "(no location)";
+      const start = event.event_start_date || "(no start date)";
+      const end = event.event_end_date || "(no end date)";
+      const desc = event.event_description || "No description provided.";
+
+      eventContext = `Event Title: ${title}\nEvent Location: ${location}\nEvent Start: ${start}\nEvent End: ${end}\nEvent Description: ${desc}`;
+    }
+
+    const { data: organisers, error: orgErr } = await supabase
+      .from("organiser")
+      .select("first_name,last_name,role,email_address,phone_number")
+      .eq("event_id", eventId)
+      .limit(50);
+
+    if (orgErr) {
+      console.error("Error fetching organisers:", orgErr.message);
+    } else if (organisers && organisers.length) {
+      const list = organisers
+        .map((o: any) => {
+          const name = [o.first_name, o.last_name].filter(Boolean).join(" ") || "(no name)";
+          const role = o.role ? ` (${o.role})` : "";
+          const contactParts = [o.email_address, o.phone_number].filter(Boolean);
+          const contact = contactParts.length ? ` – ${contactParts.join(" | ")}` : "";
+          return `• ${name}${role}${contact}`;
+        })
+        .join("\n");
+      organisersContext = `Organisers / Logistics team (max 50 listed):\n${list}`;
+    }
+
     const { data: expenses, error: expenseErr } = await supabase
         .from("expenses")
         .select("*")
@@ -82,7 +194,6 @@ export async function POST(req: NextRequest) {
         expenseContext = `Hacakthon Expenses (max 50 listed): \n${list}`
     }
 
-    // Sponsors
     const { data: sponsors, error: sponsorsErr } = await supabase
         .from("sponsor")
         .select("*")
@@ -105,7 +216,6 @@ export async function POST(req: NextRequest) {
         sponsorContext = `Sponsors (max 50 listed): \n${list}`
     }
 
-    // Tech
     const { data: tech, error: techErr } = await supabase
         .from("tech")
         .select("*")
@@ -128,7 +238,6 @@ export async function POST(req: NextRequest) {
         sponsorContext = `Tech details (max 50 listed): \n${list}`
     }
 
-    // Fetch attendee data
     const { data: attendees, error: attendError } = await supabase
         .from("attendees")
         .select("first_name, last_name, age, gender, dietary_requirements")
@@ -151,13 +260,9 @@ export async function POST(req: NextRequest) {
             .join("\n")
         attendeeContext = `Attendee Details: \n${list}`
     }
-
-    const combinedContext = [eventContext, organisersContext, expenseContext, sponsorContext, attendeeContext, extraContext].filter(Boolean).join("\n\n");
-    const answer = await askGemini(question, combinedContext);
-
-    return NextResponse.json({ answer });
-  } catch (e: any) {
-    console.error("Unexpected error:", e);
-    return NextResponse.json({ error: e?.message || "Unexpected error" }, { status: 400 });
   }
+
+  return [eventContext, organisersContext, expenseContext, sponsorContext, attendeeContext, extraContext]
+    .filter(Boolean)
+    .join("\n\n");
 }
