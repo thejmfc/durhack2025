@@ -115,7 +115,7 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-indigo-600 text-white py-2 rounded-md font-medium hover:bg-indigo-700"
+        className="w-full bg-slate-900 text-white py-2 rounded-md font-medium hover:bg-black"
       >
         {isLoading ? "Adding..." : "Add Organiser"}
       </button>
