@@ -54,19 +54,26 @@ export default function EventLogistics() {
         {loading && <p>Loading...</p>}
         {error && <p>{error}</p>}
         {!loading && !error && 
-        <>
-          <AddOrganiser uuid={params.event as string}/>
-          {organisers.map((e) => (
-            <OrganiserCard 
-              key={e}
-              first_name={e.first_name}
-              last_name={e.last_name}
-              phone_number={e.phone_number}
-              email_address={e.email_address}
-              role={e.role}
-            />
-          ))}
-        </>
+        <div className="flex w-full">
+            <div className="w-full flex flex-col gap-2">
+
+                {organisers.map((e) => (
+                    <OrganiserCard 
+                    key={e}
+                    first_name={e.first_name}
+                    last_name={e.last_name}
+                    phone_number={e.phone_number}
+                    email_address={e.email_address}
+                    role={e.role}
+                    />
+                    ))
+                }
+            </div>
+            <div className="w-full">
+
+                <AddOrganiser uuid={params.event as string}/>
+            </div>
+        </div>
         }
       </main>
     </div></>

@@ -6,9 +6,9 @@ export default function OrganiserCard({
   role = "Organiser"
 }) {
   return (
-    <div className="max-w-1/3 bg-white rounded-3xl shadow-xl overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
       <div className="p-6">
-        <section className="flex justify-between items-start">
+        <section className="flex justify-between items-center align-middle ">
           <h1 className="text-xl font-bold text-gray-900">
             {first_name} {last_name}
           </h1>
