@@ -62,7 +62,7 @@ export default function EventSponsor() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col bg-gray-50">
         <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem" }}>
-          Logistics
+          Sponsors
         </h1>
 
         {/* Page content */}
