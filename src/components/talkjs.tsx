@@ -1,9 +1,12 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import supabase from "@/Supabase";
+import { useAuth } from "@/context/AuthContext";
 
 interface Message {
     sender: "user" | "bot";
     text: string;
+    created_at?: string;
 }
 
 interface SimpleEvent { event_id: string; event_title: string }
@@ -14,11 +17,13 @@ interface ChatUIProps {
 }
 
 export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
+    const { user } = useAuth();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string | undefined>(eventId);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
     // On first mount, if no eventId was provided, restore the last selected event from localStorage
     useEffect(() => {
@@ -31,15 +36,52 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const storageKey = useMemo(() => `chat_history_${selectedEventId || 'no_event'}`, [selectedEventId]);
+    const storageKey = useMemo(() => `chat_history_${user?.id || 'anon'}_${selectedEventId || 'no_event'}`, [selectedEventId, user?.id]);
 
+    // Load history: prefer Supabase for signed-in users, fallback to localStorage
     useEffect(() => {
-        try {
-            const saved = localStorage.getItem(storageKey);
-            if (saved) setMessages(JSON.parse(saved));
-        } catch {}
-    }, [storageKey]);
+        let cancelled = false;
+        async function load() {
+            // Clear while loading to avoid mixing contexts
+            setMessages([]);
+            if (user) {
+                try {
+                    let query = supabase
+                        .from("chat_messages")
+                        .select("role,text,created_at")
+                        .eq("user_id", user.id)
+                        .order("created_at", { ascending: true }) as any;
+                    if (selectedEventId) {
+                        query = query.eq("event_id", selectedEventId);
+                    } else {
+                        query = query.is("event_id", null);
+                    }
+                    const { data, error } = await query;
+                    if (error) throw error;
+                    if (!cancelled && data) {
+                        const msgs: Message[] = data.map((row: any) => ({
+                            sender: row.text === undefined ? "bot" : (row.role as "user" | "bot") || "bot",
+                            text: row.text,
+                            created_at: row.created_at,
+                        }));
+                        setMessages(msgs);
+                    }
+                    return;
+                } catch (e) {
+                    // fall back to localStorage
+                    console.warn("Chat history: falling back to localStorage", e);
+                }
+            }
+            try {
+                const saved = localStorage.getItem(storageKey);
+                if (!cancelled && saved) setMessages(JSON.parse(saved));
+            } catch {}
+        }
+        load();
+        return () => { cancelled = true; };
+    }, [storageKey, selectedEventId, user]);
 
+    // Persist to localStorage as a secondary cache
     useEffect(() => {
         try {
             localStorage.setItem(storageKey, JSON.stringify(messages));
@@ -52,6 +94,12 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
             if (selectedEventId) localStorage.setItem("last_selected_event_id", selectedEventId);
         } catch {}
     }, [selectedEventId]);
+
+    // Auto-scroll to bottom when messages change
+    useEffect(() => {
+        const el = scrollRef.current;
+        if (el) el.scrollTop = el.scrollHeight;
+    }, [messages, loading]);
 
     function onPickFiles(e: React.ChangeEvent<HTMLInputElement>) {
         if (!e.target.files) return;
@@ -79,11 +127,31 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
         return parts.join("\n\n");
     }
 
+    async function saveMessage(role: "user" | "bot", text: string, createdAt?: string) {
+        const created_at = createdAt || new Date().toISOString();
+        // Save to local state immediately
+        setMessages(prev => [...prev, { sender: role, text, created_at }]);
+        // Try to persist to Supabase if signed-in
+        if (user) {
+            try {
+                await supabase.from("chat_messages").insert({
+                    user_id: user.id,
+                    event_id: selectedEventId || null,
+                    role,
+                    text,
+                    created_at,
+                });
+            } catch (e) {
+                console.warn("Failed to persist chat message, cached locally only.", e);
+            }
+        }
+    }
+
     async function handleSend() {
         if (!input.trim() && files.length === 0) return;
         const userMsg = [input, files.length ? `\n[${files.length} file(s) attached]` : ""].join("");
-        setMessages(prev => [...prev, { sender: "user", text: userMsg }]);
         setLoading(true);
+        await saveMessage("user", userMsg);
 
         const filesContext = await buildFilesContext();
         const res = await fetch("/api/askGemini", {
@@ -96,11 +164,37 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
             }),
         });
         const data = await res.json();
-
-        setMessages(msgs => [...msgs, { sender: "bot", text: data.answer || data.error || "No response" }]);
+        await saveMessage("bot", data.answer || data.error || "No response");
         setInput("");
         setFiles([]);
         setLoading(false);
+    }
+
+    async function clearHistory() {
+        // Clear local state and localStorage immediately for snappy UX
+        setMessages([]);
+        try { localStorage.removeItem(storageKey); } catch {}
+        // Delete from Supabase for signed-in users
+        if (user) {
+            try {
+                let del = supabase
+                    .from("chat_messages")
+                    .delete()
+                    .eq("user_id", user.id) as any;
+                if (selectedEventId) {
+                    del = del.eq("event_id", selectedEventId);
+                } else {
+                    del = del.is("event_id", null);
+                }
+                await del;
+            } catch (e) {
+                console.warn("Failed to clear remote chat history", e);
+            }
+        }
+    }
+
+    function copyToClipboard(text: string) {
+        try { navigator.clipboard.writeText(text); } catch {}
     }
 
     const hasEvents = events && events.length > 0;
@@ -112,7 +206,7 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
             <div className="absolute left-0 top-0 w-full h-3 bg-purple-200 rounded-t-3xl" />
 
             {/* Header */}
-            <div className="flex items-center gap-2 mb-4 mt-2 relative z-10">
+            <div className="flex items-center gap-2 mb-2 mt-2 relative z-10">
                 <h3 className="font-bold text-gray-700 text-lg tracking-tight flex items-center gap-2">
                     <span></span> {(hasEvents && !eventId) ? "Dashboard Assistant" : "Event Assistant"}
                 </h3>
@@ -128,20 +222,37 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                         ))}
                     </select>
                 )}
+                <button
+                    onClick={clearHistory}
+                    title="Clear chat history"
+                    className="ml-2 text-xs px-2 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition"
+                >
+                    Clear
+                </button>
             </div>
 
             {/* Messages */}
-            <div className="mb-3 h-64 overflow-y-auto rounded-xl bg-white/60 px-4 py-3 border border-purple-100 shadow-inner space-y-2 scrollbar-thin scrollbar-thumb-purple-200">
+            <div ref={scrollRef} className="mb-3 h-64 overflow-y-auto rounded-xl bg-white/60 px-4 py-3 border border-purple-100 shadow-inner space-y-2 scrollbar-thin scrollbar-thumb-purple-200">
                 {messages.map((msg, i) => (
-                    <div key={i} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                    <div key={i} className={`group flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                         <div className={`
           ${msg.sender === "user"
                             ? "bg-gradient-to-br from-blue-500/90 to-purple-500/60 text-white font-medium"
                             : "bg-white border border-blue-100 text-blue-900"
                         }
-          px-3 py-2 rounded-xl max-w-[80%] transition-all shadow
+          px-3 py-2 rounded-xl max-w-[80%] transition-all shadow whitespace-pre-wrap relative
         `}>
-                            {msg.text}
+                            <div className="text-[10px] opacity-60 mb-0.5">{msg.created_at ? new Date(msg.created_at).toLocaleString() : ""}</div>
+                            <div>{msg.text}</div>
+                            {msg.sender === "bot" && (
+                                <button
+                                    onClick={() => copyToClipboard(msg.text)}
+                                    className="hidden group-hover:block absolute -top-2 -right-2 bg-white border border-gray-200 text-gray-600 text-[10px] px-2 py-0.5 rounded-full shadow"
+                                    title="Copy"
+                                >
+                                    Copy
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -178,10 +289,10 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                 />
                 <button
                     type="submit"
-                    className="bg-blue-50 hover:bg-blue-100 text-gray-700 font-semibold px-5 py-2 rounded-lg text-sm shadow-sm transition duration-200 disabled:opacity-60"
-                    disabled={loading}
+                    className="bg-blue-600/90 hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg text-sm shadow-sm transition duration-200 disabled:opacity-60"
+                    disabled={loading || (!input.trim() && files.length === 0)}
                 >
-                    Send
+                    {loading ? "Sending…" : "Send"}
                 </button>
             </form>
         </div>

@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
                 const extensions = t.tech_extension_leads;
                 const extras = t.tech_extra_materials;
 
-                return `• Screens Count: ${screens}, Plug Sockets count: £${sockets}, Extension Leads counts: ${extensions}, Extra materials ${extras}`
+                return `• Screens Count: ${screens}, Plug Sockets count: £${sockets}, Extension Leads counts: ${extensions}, Extra materials: ${extras}`
             })
             .join("\n")
         sponsorContext = `Tech details (max 50 listed): \n${list}`
