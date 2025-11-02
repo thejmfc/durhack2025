@@ -70,6 +70,7 @@ export default function AddSponsor({ uuid } : {uuid : string}) {
       setError(err.message);
     } finally {
       setLoading(false);
+      if (!error) {window.location.reload()}
     }
 
     try {

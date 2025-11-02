@@ -55,7 +55,7 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
       setError(err.message);
     } finally {
       setLoading(false);
-      window.location.reload();
+      if (!error) {window.location.reload()}
     }
   }
 

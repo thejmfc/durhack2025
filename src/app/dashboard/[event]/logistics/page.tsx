@@ -90,16 +90,18 @@ export default function EventLogistics() {
               <section>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '2rem' }}>Organisers</h2>
                 <AddOrganiser uuid={params.event as string}/>
-                {organisers.map((e) => (
-                  <OrganiserCard 
+                <div className="gap-2 flex flex-col mt-5">
+                  {organisers.map((e) => (
+                    <OrganiserCard 
                     key={e.organiser_id} // Assuming 'id' is a unique identifier
                     first_name={e.first_name}
                     last_name={e.last_name}
                     phone_number={e.phone_number}
                     email_address={e.email_address}
                     role={e.role}
-                  />
-                ))}
+                    />
+                  ))}
+                </div>
               </section>
 
                 <section>

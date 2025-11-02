@@ -71,6 +71,7 @@ export default function AddBuilding({ uuid }: { uuid: string }) {
             setError(err.message);
         } finally {
             setLoading(false);
+            if (!error) {window.location.reload()}
         }
     }
 
