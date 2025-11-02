@@ -161,7 +161,6 @@ export async function POST(req: NextRequest) {
         const followupAnswer = await askGemini(followupPrompt, combinedContext);
         return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
       } else if (name === 'removeAttendeesFunction') {
-        // args.rules is expected to be the rules object
         const res = await fetch(`${req.nextUrl.origin}/api/removeAttendeesFunction`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -169,6 +168,17 @@ export async function POST(req: NextRequest) {
         });
         const data = await res.json();
         const followupPrompt = `The function removeAttendeesFunction was called and returned the following result: ${JSON.stringify(data.result ?? data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+        const followupAnswer = await askGemini(followupPrompt, combinedContext);
+        return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+
+      } else if (name === 'attendeesStatsFunction') {
+        const res = await fetch(`${req.nextUrl.origin}/api/attendeesStats`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ eventId }),
+        });
+        const data = await res.json();
+        const followupPrompt = `The function attendeesStatsFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
         const followupAnswer = await askGemini(followupPrompt, combinedContext);
         return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
       }
