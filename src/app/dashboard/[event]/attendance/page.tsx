@@ -6,7 +6,6 @@ import { useParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Papa from "papaparse";
 
-// Component to add a new attendee
 function AddAttendee({ eventId }: { eventId: string }) {
   const [form, setForm] = useState({
     first_name: "",
@@ -22,7 +21,6 @@ function AddAttendee({ eventId }: { eventId: string }) {
   const [csvLoading, setCsvLoading] = useState(false);
   const [csvError, setCsvError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  // CSV upload handler
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCsvError(null);
     const file = e.target.files?.[0];
@@ -32,7 +30,6 @@ function AddAttendee({ eventId }: { eventId: string }) {
       header: true,
       skipEmptyLines: true,
       complete: async (results: any) => {
-        // Map CSV columns to form fields
         const mapped = results.data.map((row: any) => ({
           event_id: eventId,
           first_name: row.first_name || row["First Name"] || "",
@@ -43,14 +40,12 @@ function AddAttendee({ eventId }: { eventId: string }) {
           email_address: row.email_address || row["Email"] || row["Email Address"] || "",
           dietary_requirements: row.dietary_requirements || row["Dietary Requirements"] || "",
         }));
-        // Filter out empty rows
         const valid = mapped.filter(a => a.first_name && a.last_name && a.email_address);
         if (valid.length === 0) {
           setCsvError("No valid attendees found in CSV.");
           setCsvLoading(false);
           return;
         }
-        // Insert to Supabase
         const { error } = await supabase.from("attendees").insert(valid);
         if (error) {
           setCsvError(error.message);
@@ -103,7 +98,6 @@ function AddAttendee({ eventId }: { eventId: string }) {
 
   return (
   <form onSubmit={handleSubmit} className="space-y-4">
-      {/* CSV Upload */}
       <div className="mb-2">
         <label className="block font-medium mb-1">Upload CSV to add multiple attendees:</label>
         <input
@@ -196,19 +190,16 @@ function AddAttendee({ eventId }: { eventId: string }) {
   );
 }
 
-// Component to display attendee statistics
 function AttendeeStats({ attendees }: { attendees: any[] }) {
   if (attendees.length === 0) {
     return <p className="text-gray-600 italic">No attendees have been added yet.</p>;
   }
 
-  // Age stats
   const ages = attendees.map(a => a.age).filter(a => typeof a === "number");
   const minAge = Math.min(...ages);
   const maxAge = Math.max(...ages);
   const meanAge = (ages.reduce((sum, age) => sum + age, 0) / ages.length).toFixed(1);
 
-  // Gender percentages
   const genderCounts = attendees.reduce(
     (acc, a) => {
       const gender = a.gender || "Other";
@@ -222,7 +213,6 @@ function AttendeeStats({ attendees }: { attendees: any[] }) {
     ([gender, count]) => `${gender}: ${((count / totalAttendees) * 100).toFixed(1)}%`
   );
 
-  // Dietary requirements
   const dietary = Array.from(new Set(attendees.map(a => a.dietary_requirements).filter(Boolean)));
 
   return (
@@ -287,13 +277,11 @@ export default function EventAttendees() {
           Attendees Statistics
         </h1>
         <section className="flex-1 p-8 space-y-8">
-          {/* Add Attendee */}
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
             <h2 className="text-xl font-semibold mb-4 text-black">Add a New Attendee</h2>
             {event && <AddAttendee eventId={event} />}
           </div>
 
-          {/* Statistics */}
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
             <h2 className="text-xl font-semibold mb-4 text-black">Event Statistics</h2>
             {loading && <p className="text-sm text-gray-500">Loading...</p>}
