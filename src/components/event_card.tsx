@@ -45,7 +45,7 @@ export default function EventCard(
                 <section className="mt-2">
                     <div className="flex items-center text-slate-400 mb-1">
                         <h3 className="text-xs">
-                            {start_date} – {end_date}
+                            From ({start_date}) to ({end_date})
                         </h3>
                     </div>
                     <p className="text-slate-200 text-sm">

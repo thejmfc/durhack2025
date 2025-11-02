@@ -65,10 +65,13 @@ export default function Signup() {
                                         bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
                                         drop-shadow-[0_2px_25px_rgba(139,92,246,0.5)]
                                         mb-2
-                                    "
-                                >
-                                    Sign Up
+                                        whitespace-nowrap
+                                        leading-tight // Or remove if already present
+                                      ">
+                                    Sign&nbsp;Up
                                 </h2>
+
+
                                 {/* Glowing background blur effect */}
                                 <div className="
                                     absolute left-0 right-0 top-0 bottom-0

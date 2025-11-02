@@ -145,7 +145,7 @@ export default function EventLogistics() {
                 type="submit"
                 disabled={loading}
                 style={{
-                  background: '#0070f3',
+                  background: '#101727',
                   color: 'white',
                   border: 'none',
                   borderRadius: 6,
