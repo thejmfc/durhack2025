@@ -7,6 +7,7 @@ const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string })
 // Prompt Engineering
 const baseSystemPrompt = "You are a helpful assistant for a website that is designed to help people answer questions about organising a Hackathon. " +
     "Don't reiterate that you are a hackathon assistant; just be helpful and concise. " +
+    "Be prepared to do a web search for real time information on pricing of local products near the site of the hackathon." +
     "Keep responses to about 6–7 short sentences unless the user asks for more detail.";
 
 export async function askGemini(question: string, context?: string): Promise<string> {
