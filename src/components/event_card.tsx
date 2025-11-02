@@ -6,7 +6,7 @@ export default function EventCard({
   event_description = "Add your hackathon description here..."
 }) {
   return (
-    <div className=" bg-white rounded-3xl shadow-xl overflow-hidden">
+    <div className="min-h-full bg-white rounded-3xl shadow-xl overflow-hidden">
       <div className="bg-gradient-to-br from-indigo-500 to-purple-600">
         <img src="https://placehold.co/500" alt="Hackathon Logo" className="w-full h-full object-cover"/>
       </div>
