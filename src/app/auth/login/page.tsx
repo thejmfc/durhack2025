@@ -13,7 +13,7 @@ export default function Login() {
         setLoading(true);
         setError(null);
 
-        const {  loginData, error: loginError } = await supabase.auth.signInWithPassword({
+        const {error: loginError } = await supabase.auth.signInWithPassword({
             email: formData.email,
             password: formData.password,
         });
@@ -30,20 +30,21 @@ export default function Login() {
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
+        setFormData(prev => ({
             ...prev,
             [name]: value,
         }));
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-10 bg-white rounded-2xl shadow-lg p-10">
-                <div className="text-center">
-                    <h2 className="text-4xl font-extrabold text-gray-900">HackSmith</h2>
-                    <p className="mt-2 text-sm text-gray-600">Log in to your account</p>
-                </div>
-
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-100 via-indigo-200 to-blue-200 animate-bgGradientSlow py-12 px-4 sm:px-6 lg:px-8 relative">
+            <div className="max-w-md w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 space-y-8 relative z-10">
+                <h2 className="text-center text-3xl font-extrabold text-gray-900 tracking-tight mb-2" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+                    HackSmith
+                </h2>
+                <p className="text-center text-gray-700 mb-8 font-light">
+                    Log in to your account
+                </p>
                 <form className="space-y-6" onSubmit={handleLogin} noValidate>
                     <div>
                         <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
@@ -79,14 +80,6 @@ export default function Login() {
                         />
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <div className="text-sm">
-                            <a href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Forgot your password?
-                            </a>
-                        </div>
-                    </div>
-
                     {error && (
                         <p className="mt-2 text-sm text-red-600 text-center" role="alert">
                             {error}
@@ -104,6 +97,20 @@ export default function Login() {
                     </button>
                 </form>
             </div>
+            <style>{`
+        @keyframes bgGradientSlow {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+        .animate-bgGradientSlow {
+          background-size: 200% 200%;
+          animation: bgGradientSlow 40s ease infinite;
+        }
+      `}</style>
         </div>
     );
 }
