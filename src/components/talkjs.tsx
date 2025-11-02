@@ -226,19 +226,18 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
     const hasEvents = events && events.length > 0;
 
     return (
-        <div className="w-full max-w-full p-6 rounded-3xl bg-gradient-to-br from-white/80 via-blue-50 to-purple-50 shadow-2xl border-[1.5px] border-blue-200/40 flex flex-col relative overflow-hidden">
-
-            {/* Accent Bar */}
-            <div className="absolute left-0 top-0 w-full h-3 bg-purple-200 rounded-t-3xl" />
+        <div className="w-full max-w-full p-4 sm:p-6 rounded-3xl bg-slate-900/70 border border-white/10 shadow-2xl backdrop-blur-xl flex flex-col relative overflow-hidden">
+            {/* Solid orange accent bar (no gradient) */}
+            <div className="absolute left-0 top-0 w-full h-3 bg-orange-500 rounded-t-3xl opacity-80" />
 
             {/* Header */}
-            <div className="flex items-center gap-2 mb-2 mt-2 relative z-10">
-                <h3 className="font-bold text-gray-700 text-lg tracking-tight flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-2 mt-5 relative z-10">
+                <h3 className="font-bold text-slate-100 text-lg tracking-tight flex items-center gap-2">
                     <span></span> {(hasEvents && !eventId) ? "Dashboard Assistant" : "Event Assistant"}
                 </h3>
                 {hasEvents && (
                     <select
-                        className="ml-auto text-xs border border-blue-200 rounded-md px-2 py-1 bg-white/80 shadow-sm focus:ring-2 focus:ring-purple-400 transition"
+                        className="ml-auto text-xs border border-white/20 rounded-md px-2 py-1 bg-slate-800/70 text-slate-200 focus:ring-2 focus:ring-orange-500 transition"
                         value={selectedEventId || ""}
                         onChange={e => setSelectedEventId(e.target.value || undefined)}
                     >
@@ -251,29 +250,30 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                 <button
                     onClick={clearHistory}
                     title="Clear chat history"
-                    className="ml-2 text-xs px-2 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition"
+                    className="ml-2 text-xs px-2 py-1 rounded-md border border-orange-400 text-orange-300 hover:bg-orange-900/20 transition"
                 >
                     Clear
                 </button>
             </div>
 
             {/* Messages */}
-            <div ref={scrollRef} className="mb-3 h-64 overflow-y-auto rounded-xl bg-white/60 px-4 py-3 border border-purple-100 shadow-inner space-y-2 scrollbar-thin scrollbar-thumb-purple-200">
+            <div ref={scrollRef} className="
+            mb-3 h-64 overflow-y-auto rounded-xl bg-slate-900/80 backdrop-blur border border-orange-900/20 shadow-inner space-y-2 scrollbar-thin scrollbar-thumb-orange-400">
                 {messages.map((msg, i) => (
                     <div key={i} className={`group flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                         <div className={`
-          ${msg.sender === "user"
-                            ? "bg-gradient-to-br from-blue-500/90 to-purple-500/60 text-white font-medium"
-                            : "bg-white border border-blue-100 text-blue-900"
+                        ${msg.sender === "user"
+                            ? "bg-orange-500 text-white font-semibold"
+                            : "bg-slate-800/70 border border-orange-900 text-orange-100"
                         }
-          px-3 py-2 rounded-xl max-w-[80%] transition-all shadow whitespace-pre-wrap relative
-        `}>
+                        px-3 py-2 rounded-xl max-w-[80%] transition-shadow shadow whitespace-pre-wrap relative
+                    `}>
                             <div className="text-[10px] opacity-60 mb-0.5">{msg.created_at ? new Date(msg.created_at).toLocaleString() : ""}</div>
                             <div>{msg.text}</div>
                             {msg.sender === "bot" && (
                                 <button
                                     onClick={() => copyToClipboard(msg.text)}
-                                    className="hidden group-hover:block absolute -top-2 -right-2 bg-white border border-gray-200 text-gray-600 text-[10px] px-2 py-0.5 rounded-full shadow"
+                                    className="hidden group-hover:block absolute -top-2 -right-2 bg-slate-200 border border-gray-400 text-slate-700 text-[10px] px-2 py-0.5 rounded-full shadow"
                                     title="Copy"
                                 >
                                     Copy
@@ -282,19 +282,17 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                         </div>
                     </div>
                 ))}
-                {loading && <div className="animate-pulse text-purple-400 italic text-xs">Assistant is typing…</div>}
+                {loading && <div className="animate-pulse text-orange-400 italic text-xs">Assistant is typing…</div>}
             </div>
-
-
 
             {/* Files */}
             {files.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
                     {files.map(f => (
-                        <span key={f.name} className="text-xs bg-blue-100 px-3 py-1 rounded-full flex items-center gap-1 border border-blue-200">
-          <span className="truncate max-w-[7rem]">{f.name}</span>
-          <button className="text-red-400 hover:text-red-600" onClick={() => removeFile(f.name)}>×</button>
-        </span>
+                        <span key={f.name} className="text-xs bg-orange-900/30 text-slate-100 px-3 py-1 rounded-full flex items-center gap-1 border border-orange-400/30">
+                        <span className="truncate max-w-[7rem]">{f.name}</span>
+                        <button className="text-orange-400 hover:text-orange-600" onClick={() => removeFile(f.name)}>×</button>
+                    </span>
                     ))}
                 </div>
             )}
@@ -303,13 +301,13 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
             <form
                 className="flex items-stretch gap-2"
                 onSubmit={e => { e.preventDefault(); handleSend(); }}>
-                <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs border border-gray-300 shadow-sm flex items-center gap-1 transition">
+                <label className="cursor-pointer bg-slate-800/60 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs border border-slate-700 shadow-sm flex items-center gap-1 transition">
                     <span className="text-lg">📎</span>
                     <span>Attach</span>
                     <input type="file" className="hidden" multiple onChange={onPickFiles} />
                 </label>
                 <input
-                    className="flex-1 min-w-0 border border-blue-100 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring focus:border-purple-300 text-sm shadow-sm"
+                    className="flex-1 min-w-0 border border-orange-400 bg-slate-900/70 rounded-lg px-4 py-2 focus:outline-none focus:ring focus:border-orange-400 text-sm shadow-sm text-slate-100"
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder={selectedEventId ? "Ask about your event…" : "Ask anything… (optional: pick an event)"}
@@ -317,13 +315,14 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                 />
                 <button
                     type="submit"
-                    className="bg-blue-600/90 hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg text-sm shadow-sm transition duration-200 disabled:opacity-60"
+                    className="bg-orange-500 hover:bg-orange-400 text-white font-semibold px-5 py-2 rounded-lg text-sm shadow-sm transition duration-200 disabled:opacity-85"
                     disabled={loading || (!input.trim() && files.length === 0)}
                 >
                     {loading ? "Sending…" : "Send"}
                 </button>
             </form>
         </div>
-
     );
+
+
 }

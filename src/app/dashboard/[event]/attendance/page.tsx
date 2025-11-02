@@ -182,7 +182,7 @@ function AddAttendee({ eventId }: { eventId: string }) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full md:w-auto px-6 py-3 font-semibold text-white rounded-lg shadow-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition"
+        className="w-full md:w-auto px-6 py-3 font-semibold text-white rounded-lg shadow-lg bg-slate-900 hover:from-blue-600 hover:to-purple-700 transition"
       >
         {loading ? "Adding..." : "Add Attendee"}
       </button>
