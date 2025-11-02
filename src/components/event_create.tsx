@@ -15,39 +15,101 @@ export default function EventCreate() {
 
     const router = useRouter();
 
-    const [eventDetails, setEventDetails] = useState(
-        {
-            event_title: "",
-            event_location: "",
-            event_start_date: "",
-            event_end_date: "",
-            event_description: "",
+    const [eventDetails, setEventDetails] = useState({
+        event_title: "",
+        event_location: "",
+        event_start_date: "",
+        event_end_date: "",
+        event_description: "",
+        event_image_url: "",
+    });
+
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imageUploading, setImageUploading] = useState(false);
+
+
+    async function uploadImageToBucket(file: File): Promise<string | null> {
+        // Only allow image file types
+        if (!file.type.startsWith("image/")) {
+            setError("Only image files are allowed.");
+            return null;
         }
-    )
+        if (!user?.id) {
+            setError("No user id, cannot upload image");
+            return null;
+        }
+        setError(null);
+        // Always use the 'events' bucket, upload to folder named after user id
+        const bucket = "events";
+        // Sanitize file name
+        const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const filePath = `${user.id}/${Date.now()}_${safeName}`;
+        // Log file details for debugging
+        console.log("Uploading file:", {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            filePath,
+            bucket
+        });
+        setImageUploading(true);
+        const { data, error } = await supabase.storage.from(bucket).upload(
+            filePath,
+            file,
+            {
+                upsert: true,
+                contentType: file.type || "image/png"
+            }
+        );
+        setImageUploading(false);
+        // Log upload result
+        console.log("Upload result:", { data, error });
+        if (error) {
+            setError("Image upload error: " + error.message);
+            return null;
+        }
+        const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+        console.log("Public URL result:", publicUrlData);
+        return publicUrlData?.publicUrl || null;
+    }
 
     async function handleEventCreate(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
-
+        let imageUrl = eventDetails.event_image_url;
         try {
+            if (imageFile) {
+                setImageUploading(true);
+                const uploadedUrl = await uploadImageToBucket(imageFile);
+                setImageUploading(false);
+                if (uploadedUrl) {
+                    imageUrl = uploadedUrl;
+                } else {
+                    setError("Image upload failed. Please try again.");
+                    setLoading(false);
+                    return;
+                }
+            }
             const { data, error } = await supabase
-            .from("hackathons")
-            .insert([
-                {
-                event_title: eventDetails.event_title,
-                event_location: eventDetails.event_location,
-                event_start_date: eventDetails.event_start_date,
-                event_end_date: eventDetails.event_end_date,
-                event_description: eventDetails.event_description,
-                event_owner: user?.id,
-                },
-            ])
-            .select();
-
+                .from("hackathons")
+                .insert([
+                    {
+                        event_title: eventDetails.event_title,
+                        event_location: eventDetails.event_location,
+                        event_start_date: eventDetails.event_start_date,
+                        event_end_date: eventDetails.event_end_date,
+                        event_description: eventDetails.event_description,
+                        event_owner: user?.id,
+                        event_image_url: imageUrl,
+                    },
+                ])
+                .select();
             if (error) {
                 setError(error.message);
                 return;
             }
+            // Optionally update state with the new event image URL
+            setEventDetails(prev => ({ ...prev, event_image_url: imageUrl }));
             console.log("Event created:", data);
         } catch (err: any) {
             console.error("Unexpected error:", err);
@@ -55,7 +117,7 @@ export default function EventCreate() {
         } finally {
             setLoading(false);
             setIsModalOpen(false);
-            window.location.reload(); 
+            // window.location.reload();
         }
     }
 
@@ -63,14 +125,20 @@ export default function EventCreate() {
     const handleChange = (e: any) => {
         const { name, value } = e.target;
         setEventDetails(prev => ({
-        ...prev,
-        [name]: value
+            ...prev,
+            [name]: value
         }));
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setImageFile(e.target.files[0]);
+        }
     };
     
     return (
         <>
-            <div onClick={() => setIsModalOpen(true)} className="fixed bottom-5 left-5 w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg hover:cursor-pointer">
+            <div onClick={() => setIsModalOpen(true)} className="fixed bottom-5 left-5 w-16 h-16 flex items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600 shadow-lg hover:cursor-pointer">
                 <IoIosAddCircle color="white" size={48} />
             </div>
 
@@ -79,7 +147,7 @@ export default function EventCreate() {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full max-h-90vh overflow-y-auto">
-                        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+                        <div className="bg-linear-to-r from-blue-500 to-purple-600 p-6">
                             <div className="flex justify-between items-center">
                                 <div>
                                     <h2 className="text-2xl font-bold text-white">Create New Event</h2>
@@ -172,12 +240,28 @@ export default function EventCreate() {
                                 />
                             </div>
 
+                            <div>
+                                <label htmlFor="input_image" className="block text-sm font-medium text-gray-700 mb-2">
+                                    Event Image
+                                </label>
+                                <input
+                                    id="input_image"
+                                    name="event_image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition outline-none"
+                                />
+                                {imageUploading && <p className="text-blue-500 text-sm mt-2">Uploading image...</p>}
+                                {imageFile && !imageUploading && <p className="text-green-600 text-xs mt-1">Selected: {imageFile.name}</p>}
+                            </div>
                             <div className="flex gap-4 pt-4">
                                 <button
                                     type="submit"
-                                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200 hover:cursor-pointer"
+                                    className="flex-1 bg-linear-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200 hover:cursor-pointer"
+                                    disabled={imageUploading}
                                 >
-                                    Create Event
+                                    {imageUploading ? "Uploading..." : "Create Event"}
                                 </button>
                                 <button
                                     type="button"
