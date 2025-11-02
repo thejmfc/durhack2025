@@ -1,18 +1,19 @@
-"use client"
+"use client";
 import supabase from "@/Supabase";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 
-export default function Login(){
-    const [formData, setFormData] = useState({email: "", password: ""})
+export default function Login() {
+    const [formData, setFormData] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
-        console.log(formData)
-        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+        setError(null);
+
+        const {  loginData, error: loginError } = await supabase.auth.signInWithPassword({
             email: formData.email,
             password: formData.password,
         });
@@ -23,62 +24,85 @@ export default function Login(){
             setError(loginError.message);
             return;
         } else {
-            redirect("/dashboard"); 
+            redirect("/dashboard");
         }
-
     }
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-        ...prev,
-        [name]: value
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
         }));
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-xl">
-            <div>
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                HackSmith
-                </h2>
-            </div>
-            <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-                <div className="rounded-md shadow-sm -space-y-px">
-                <div>
-                    <input
-                    type="email"
-                    name="email"
-                    onChange={handleChange}
-                    placeholder="Email address"
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-10 bg-white rounded-2xl shadow-lg p-10">
+                <div className="text-center">
+                    <h2 className="text-4xl font-extrabold text-gray-900">HackSmith</h2>
+                    <p className="mt-2 text-sm text-gray-600">Log in to your account</p>
                 </div>
-                <div>
-                    <input
-                    type="password"
-                    name="password"
-                    onChange={handleChange}
-                    placeholder="Password"
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    />
-                </div>
-                </div>
-                <div>
-                <button
-                    className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 transition-colors duration-150 ease-in-out hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={loading}
-                >
-                    {loading ? 'Loading...' : 'Sign in'}
-                </button>
-                </div>
-                {error && (
-                <div className="text-red-500 text-sm text-center">
-                    {error}
-                </div>
-                )}
-            </form>
+
+                <form className="space-y-6" onSubmit={handleLogin} noValidate>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
+                            Email Address
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            autoComplete="email"
+                            placeholder="you@example.com"
+                            className="block w-full rounded-md border border-gray-300 px-4 py-2 placeholder-gray-400 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none focus:ring-2 sm:text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            autoComplete="current-password"
+                            placeholder="••••••••"
+                            className="block w-full rounded-md border border-gray-300 px-4 py-2 placeholder-gray-400 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none focus:ring-2 sm:text-sm"
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <div className="text-sm">
+                            <a href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                Forgot your password?
+                            </a>
+                        </div>
+                    </div>
+
+                    {error && (
+                        <p className="mt-2 text-sm text-red-600 text-center" role="alert">
+                            {error}
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full flex justify-center py-3 rounded-md text-white font-semibold transition ${
+                            loading ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-400"
+                        }`}
+                    >
+                        {loading ? "Signing in..." : "Sign in"}
+                    </button>
+                </form>
             </div>
         </div>
     );
