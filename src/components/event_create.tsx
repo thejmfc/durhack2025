@@ -4,9 +4,8 @@ import supabase from "@/Supabase";
 import { refresh } from "next/cache";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { IoIosAddCircle } from "react-icons/io";
-import { error } from "console";
 
 export default function EventCreate() { 
     const { user, session } = useAuth();
@@ -20,8 +19,8 @@ export default function EventCreate() {
         {
             event_title: "",
             event_location: "",
-            event_start_date: new Date(),
-            event_end_date: new Date(),
+            event_start_date: "",
+            event_end_date: "",
             event_description: "",
         }
     )
@@ -29,7 +28,6 @@ export default function EventCreate() {
     async function handleEventCreate(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
-        setError(null);
 
         try {
             const { data, error } = await supabase
@@ -46,23 +44,20 @@ export default function EventCreate() {
             ])
             .select();
 
-            if (error) throw error;
-
-            const newEvent = data?.[0];
-            console.log("Event created:", newEvent);
-
-            if (newEvent) {
-            router.push(`/dashboard/${newEvent.event_id}`);
+            if (error) {
+                setError(error.message);
+                return;
             }
+            console.log("Event created:", data);
         } catch (err: any) {
-            console.error("Unexpected error:", err.message);
+            console.error("Unexpected error:", err);
             setError(err.message);
         } finally {
             setLoading(false);
             setIsModalOpen(false);
+            window.location.reload(); 
         }
-        }
-
+    }
 
 
     const handleChange = (e: any) => {
