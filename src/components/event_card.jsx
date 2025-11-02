@@ -1,4 +1,4 @@
-function EventCard({ 
+export default function EventCard({ 
   event_title = "The Hackathon", 
   event_location = "Hylia, Hyrule",
   start_date = "The Big Bang",
@@ -6,11 +6,7 @@ function EventCard({
   event_description = "Add your hackathon description here..."
 }) {
   return (
-<<<<<<< HEAD
     <div className=" bg-white rounded-3xl shadow-xl overflow-hidden">
-=======
-    <div className="min-h-full max-h-full bg-white rounded-3xl shadow-xl overflow-hidden">
->>>>>>> 7064f0eb8b82ead218f41d2a86a55a6be3b0a9ea
       <div className="bg-gradient-to-br from-indigo-500 to-purple-600">
         <img src="https://placehold.co/500" alt="Hackathon Logo" className="w-full h-full object-cover"/>
       </div>
@@ -39,5 +35,3 @@ function EventCard({
     </div>
   );
 }
-
-export default EventCard
