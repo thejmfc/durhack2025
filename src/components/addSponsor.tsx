@@ -101,11 +101,8 @@ export default function AddSponsor({ uuid } : {uuid : string}) {
   return (
     <form
       onSubmit={handleAddSponsor}
-      className="max-w-md mx-auto bg-white shadow-md rounded-xl p-6 space-y-4"
+      className="mx-aut p-6 space-y-4"
     >
-      <h2 className="text-lg font-semibold text-gray-800">
-        Add Sponsor for Event: {uuid}
-      </h2>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
