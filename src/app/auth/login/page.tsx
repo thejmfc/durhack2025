@@ -71,7 +71,7 @@ export default function Login() {
                                     mb-2
                                 "
                             >
-                                HackSmith
+                                Hacksmith
                             </h2>
                             {/* Glowing background behind heading */}
                             <div className="
