@@ -1,8 +1,7 @@
-"use client";
 import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 
 export default function AddOrganiser({ uuid } : {uuid : string}) {
   const { user } = useAuth();
@@ -50,13 +49,13 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
       if (error) throw error;
 
       console.log("Organiser created:", data);
-      router.refresh();
       
     } catch (err: any) {
       console.error("Error creating organiser:", err);
       setError(err.message);
     } finally {
       setLoading(false);
+      window.location.reload();
     }
   }
 
