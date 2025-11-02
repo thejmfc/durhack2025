@@ -13,7 +13,7 @@ export default function Login() {
         setLoading(true);
         setError(null);
 
-        const {error: loginError } = await supabase.auth.signInWithPassword({
+        const { error: loginError } = await supabase.auth.signInWithPassword({
             email: formData.email,
             password: formData.password,
         });
@@ -37,80 +37,111 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-100 via-indigo-200 to-blue-200 animate-bgGradientSlow py-12 px-4 sm:px-6 lg:px-8 relative">
-            <div className="max-w-md w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 space-y-8 relative z-10">
-                <h2 className="text-center text-3xl font-extrabold text-gray-900 tracking-tight mb-2" style={{ fontFamily: "'Exo 2', sans-serif" }}>
-                    Hacksmith
-                </h2>
-                <p className="text-center text-gray-700 mb-8 font-light">
-                    Log in to your account
-                </p>
-                <form className="space-y-6" onSubmit={handleLogin} noValidate>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
-                            Email Address
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            autoComplete="email"
-                            placeholder="you@example.com"
-                            className="block w-full rounded-md border border-gray-300 px-4 py-2 placeholder-gray-400 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none focus:ring-2 sm:text-sm"
-                        />
+        <>
+            <style>
+                {`@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap');`}
+            </style>
+            <div className="min-h-screen w-full bg-[#020617] relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                {/* Dark Sphere Grid Background */}
+                <div
+                    className="absolute inset-0 z-0"
+                    style={{
+                        background: "#020617",
+                        backgroundImage: `
+                            linear-gradient(to right, rgba(71,85,105,0.3) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(71,85,105,0.3) 1px, transparent 1px),
+                            radial-gradient(circle at 50% 35%, rgba(139,92,246,0.16) 0%, transparent 75%)
+                        `,
+                        backgroundSize: "32px 32px, 32px 32px, 100% 100%",
+                    }}
+                />
+                {/* Geometric overlay */}
+                <div className="pointer-events-none absolute inset-0 opacity-10 bg-[repeating-radial-gradient(circle_at_10%_10%,rgba(255,255,255,0.04),transparent_3px,transparent_15px)]"></div>
+                <div className="max-w-md w-full bg-white/10 border border-white/10 backdrop-blur-2xl shadow-2xl rounded-3xl p-8 space-y-8 z-10 relative">
+                    {/* Neon gradient heading */}
+                    <div className="mb-3 text-center relative">
+                        <div className="relative inline-block">
+                            <h2
+                                style={{ fontFamily: "'Exo 2', 'Poppins', 'Manrope', sans-serif" }}
+                                className="
+                                    text-4xl font-extrabold tracking-tight
+                                    text-transparent bg-clip-text
+                                    bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
+                                    drop-shadow-[0_2px_25px_rgba(139,92,246,0.5)]
+                                    mb-2
+                                "
+                            >
+                                HackSmith
+                            </h2>
+                            {/* Glowing background behind heading */}
+                            <div className="
+                                absolute left-0 right-0 top-0 bottom-0
+                                rounded-lg
+                                pointer-events-none
+                                blur-lg opacity-50
+                                bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+                                -z-10
+                            " />
+                        </div>
+                        <p className="text-slate-300 font-light text-md">Log in to your account</p>
                     </div>
-
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1">
-                            Password
-                        </label>
-                        <input
-                            id="password"
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            autoComplete="current-password"
-                            placeholder="••••••••"
-                            className="block w-full rounded-md border border-gray-300 px-4 py-2 placeholder-gray-400 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none focus:ring-2 sm:text-sm"
-                        />
+                    <form className="space-y-7" onSubmit={handleLogin} autoComplete="off">
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-semibold text-slate-200 mb-1">
+                                Email Address
+                            </label>
+                            <input
+                                id="email"
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                autoComplete="email"
+                                placeholder="you@example.com"
+                                className="block w-full rounded-lg border border-white/10 bg-white/10 backdrop-blur placeholder:text-slate-400 text-slate-100 py-3 px-4 shadow-md focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/50 focus:outline-none transition"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-semibold text-slate-200 mb-1">
+                                Password
+                            </label>
+                            <input
+                                id="password"
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                autoComplete="current-password"
+                                placeholder="••••••••"
+                                className="block w-full rounded-lg border border-white/10 bg-white/10 backdrop-blur placeholder:text-slate-400 text-slate-100 py-3 px-4 shadow-md focus:border-pink-400 focus:ring-2 focus:ring-pink-300/40 focus:outline-none transition"
+                            />
+                        </div>
+                        {error && (
+                            <p className="text-red-400 text-sm text-center">{error}</p>
+                        )}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full flex justify-center py-3 rounded-xl
+                                font-semibold transition shadow-lg
+                                ${loading ?
+                                "bg-orange-300 cursor-not-allowed"
+                                : "bg-orange-500 hover:scale-103 hover:shadow-xl focus:ring-2 focus:ring-orange-400/80 focus:ring-offset-2"
+                            }
+                                text-slate-50`}
+                        >
+                            {loading ? "Signing in..." : "Sign In"}
+                        </button>
+                    </form>
+                    <div className="text-center mt-6">
+                        <a href="/auth/signup" className="text-indigo-300 hover:text-pink-300 hover:underline text-sm transition">
+                            Don&apos;t have an account? Sign Up
+                        </a>
                     </div>
-
-                    {error && (
-                        <p className="mt-2 text-sm text-red-600 text-center" role="alert">
-                            {error}
-                        </p>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`w-full flex justify-center py-3 rounded-md text-white font-semibold transition ${
-                            loading ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-400"
-                        }`}
-                    >
-                        {loading ? "Signing in..." : "Sign in"}
-                    </button>
-                </form>
+                </div>
             </div>
-            <style>{`
-        @keyframes bgGradientSlow {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        .animate-bgGradientSlow {
-          background-size: 200% 200%;
-          animation: bgGradientSlow 40s ease infinite;
-        }
-      `}</style>
-        </div>
+        </>
     );
 }
