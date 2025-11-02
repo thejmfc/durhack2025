@@ -22,7 +22,7 @@ export default function ChatToggle({ eventId, events = [] }: { eventId?: string;
             </button>
 
             {isOpen && (
-                <Box className="w-80 sm:w-96 md:w-[28rem] max-w-[90vw]" id="ai-chat-panel">
+                <Box className="w-80 sm:w-96 md:w-[28rem] max-w-[90vw]">
                     <ChatUI eventId={eventId} events={events} />
                 </Box>
             )}

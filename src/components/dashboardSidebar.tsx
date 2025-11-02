@@ -8,6 +8,7 @@ export default function DashboardSidebar({ uuid }: { uuid: string }) {
 
   const items = [
     { name: "Overview", path: "" },
+    { name: "Attendance", path: "attendance"},
     { name: "Logistics", path: "logistics" },
     { name: "Finance", path: "finance" },
     { name: "Sponsors", path: "sponsors" },
