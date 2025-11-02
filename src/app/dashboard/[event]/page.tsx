@@ -20,6 +20,7 @@ export default function EventInspect() {
   const [sponsorCount, setSponsorCount] = useState<number>(0);
   const [sponsorTiers, setSponsorTiers] = useState<Record<string, number>>({});
   const [organiserCount, setOrganiserCount] = useState<number>(0);
+  const [organiserNames, setOrganiserNames] = useState<string[]>([]);
   const [hackerCount, setHackerCount] = useState<number>(0);
   const [hackerStats, setHackerStats] = useState<{ timetable: number, miniEvents: number, prizes: number, challenges: number }>({ timetable: 0, miniEvents: 0, prizes: 0, challenges: 0 });
   const [techStatus, setTechStatus] = useState<string>("N/A");
@@ -60,25 +61,27 @@ export default function EventInspect() {
         // Sponsors
         const { data: sponsors, error: sponsorError } = await supabase
           .from("sponsor")
-          .select("sponsor_id")
+          .select("sponsor_id, sponsor_tier")
           .eq("event_id", params.event);
         if (sponsorError) throw sponsorError;
         setSponsorCount(sponsors ? sponsors.length : 0);
-        // Sponsor tiers breakdown
+        // Sponsor tiers breakdown (only show tiers with count > 0)
         const tiers = ["Platinum", "Gold", "Silver", "Bronze", "Custom"];
         const tierCounts: Record<string, number> = {};
         tiers.forEach(tier => {
-          tierCounts[tier] = sponsors ? sponsors.filter((s: any) => s.sponsor_tier === tier).length : 0;
+          const count = sponsors ? sponsors.filter((s: any) => s.sponsor_tier === tier).length : 0;
+          if (count > 0) tierCounts[tier] = count;
         });
         setSponsorTiers(tierCounts);
 
         // Organisers
         const { data: organisers, error: organiserError } = await supabase
           .from("organiser")
-          .select("organiser_id")
+          .select("*")
           .eq("event_id", params.event);
         if (organiserError) throw organiserError;
         setOrganiserCount(organisers ? organisers.length : 0);
+        setOrganiserNames(organisers && organisers.length > 0 ? organisers.slice(0, 3).map((o: any) => (o.first_name + " " + o.last_name[0] + " (" + o.role + ")")) : []);
 
         // Hackers: count from timetable, mini_events, prizes, challenges (sum all rows as a proxy for activity)
         let hackerSum = 0;
@@ -167,7 +170,7 @@ export default function EventInspect() {
                   title="Organisers"
                   value={organiserCount}
                   description="Team members"
-                  stats={organiserCount > 0 ? [organiserCount + ' organisers'] : []}
+                  stats={organiserNames.length > 0 ? organiserNames : []}
                   href={`./${params.event}/logistics`}
                   className="bg-linear-to-br from-yellow-50 to-yellow-100 border-yellow-200 text-lg min-h-[200px]"
                 />
@@ -183,7 +186,7 @@ export default function EventInspect() {
                   title="Tech Overview"
                   value={techStatus}
                   description="Tech readiness"
-                  stats={[`${techDetails.screens} screens`, `${techDetails.sockets} sockets`, `${techDetails.leads} leads`, techDetails.wifi ? 'WiFi' : 'No WiFi']}
+                  stats={[`${techDetails.screens} screens`, `${techDetails.sockets} sockets`, `${techDetails.leads} leads`]}
                   href={`./${params.event}/tech`}
                   className="bg-linear-to-br from-gray-50 to-gray-100 border-gray-200 text-lg min-h-[200px]"
                 />
