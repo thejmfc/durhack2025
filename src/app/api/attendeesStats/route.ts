@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
             // Dietary breakdown
             const dietaryCounts: Record<string, number> = {};
             attendees.forEach((a: any) => {
-                const dietary = a.dietary || 'None';
+                const dietary = a.dietary_requirements || 'None';
                 dietaryCounts[dietary] = (dietaryCounts[dietary] || 0) + 1;
             });
 
