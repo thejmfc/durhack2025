@@ -48,11 +48,9 @@ export default function EventSponsor() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col bg-gray-50">
-        {/* Top bar */}
-        <header className="flex justify-between items-center border-b bg-white px-8 py-4 shadow-sm">
-          <h1 className="text-2xl font-bold text-gray-800">Sponsorship</h1>
-          <LogoutButton />
-        </header>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+        Logistics
+        </h1>
 
         {/* Page content */}
         <section className="flex-1 p-8 space-y-8">
