@@ -82,7 +82,8 @@ export default function Dashboard() {
                                     start_date={e.event_start_date}
                                     end_date={e.event_end_date}
                                     event_description={e.event_description}
-                                    />
+                                    event_image_url={e.event_image_url}
+                                />
                             </Link>
                         ))}
 
