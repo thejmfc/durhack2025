@@ -36,7 +36,7 @@ export default function Dashboard() {
   }, [user]);
 
     const sortedEvents = [...events].sort((a, b) => 
-        new Date(b.event_start_date).getTime() - new Date(a.event_start_date).getTime()
+        new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime()
     );
 
     const nextUpcoming = events
