@@ -7,6 +7,7 @@ interface Message {
     sender: "user" | "bot";
     text: string;
     created_at?: string;
+    pending?: boolean;
 }
 
 interface SimpleEvent { event_id: string; event_title: string }
@@ -60,11 +61,21 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                     if (error) throw error;
                     if (!cancelled && data) {
                         const msgs: Message[] = data.map((row: any) => ({
-                            sender: row.text === undefined ? "bot" : (row.role as "user" | "bot") || "bot",
+                            sender: (row.role as "user" | "bot") || "bot",
                             text: row.text,
                             created_at: row.created_at,
                         }));
-                        setMessages(msgs);
+                        let finalMsgs = msgs;
+                        try {
+                            const saved = localStorage.getItem(storageKey);
+                            if (saved) {
+                                const localMsgs: Message[] = JSON.parse(saved);
+                                if (localMsgs.length > msgs.length) {
+                                    finalMsgs = localMsgs;
+                                }
+                            }
+                        } catch {}
+                        setMessages(finalMsgs);
                     }
                     return;
                 } catch (e) {
@@ -130,19 +141,34 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
     async function saveMessage(role: "user" | "bot", text: string, createdAt?: string) {
         const created_at = createdAt || new Date().toISOString();
         // Save to local state immediately
-        setMessages(prev => [...prev, { sender: role, text, created_at }]);
+        let pending = false;
+        setMessages(prev => [...prev, { sender: role, text, created_at, pending }]);
         // Try to persist to Supabase if signed-in
         if (user) {
             try {
-                await supabase.from("chat_messages").insert({
+                const { error, status } = await supabase.from("chat_messages").insert({
                     user_id: user.id,
                     event_id: selectedEventId || null,
                     role,
                     text,
                     created_at,
                 });
+                if (error) {
+                    console.warn("Supabase insert failed (", status, ") for", role, error.message);
+                    pending = true;
+                }
             } catch (e) {
                 console.warn("Failed to persist chat message, cached locally only.", e);
+                pending = true;
+            }
+            if (pending) {
+                // Mark last message as pending to indicate it wasn't saved remotely; it will still be in localStorage
+                setMessages(prev => {
+                    const copy = [...prev];
+                    const idx = copy.length - 1;
+                    if (idx >= 0) copy[idx] = { ...copy[idx], pending: true };
+                    return copy;
+                });
             }
         }
     }

@@ -20,7 +20,7 @@ export async function askGemini(question: string, context?: string): Promise<str
     const fullPrompt = `${baseSystemPrompt}${contextualBlock}\n\nUser question: ${question}\nAssistant:`;
 
     const response = await gemini.models.generateContent({
-        model: 'gemini-2.5-pro',
+        model: 'gemini-2.5-flash',
         contents: fullPrompt,
     });
 
