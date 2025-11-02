@@ -214,7 +214,7 @@ export default function EventLogistics() {
 
           {!loading && !error && (
             <div className="w-full space-y-8">
-              <div className="w-full flex h-1/3 min-h-1/3 max-h-1/3 justify-center items-center gap-x-15">
+              <div className="w-full max-w-full flex h-1/3 min-h-1/3 max-h-1/3 justify-center items-center gap-x-15">
                 <Bar data={chartData} options={chartOptions} />
               
                 <Pie data={WithdrawalPieChartData} options={WithdrawalPieChartOptions} />
