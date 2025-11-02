@@ -41,7 +41,7 @@ export default function Home() {
                                         mb-3
                                         "
                                 >
-                                    HackSmith
+                                    Hacksmith
                                 </h1>
                                 {/* Optional blurred glow behind the text for layered pop */}
                                 <div className="
