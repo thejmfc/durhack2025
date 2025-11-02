@@ -26,15 +26,6 @@ Function: getAttendeesFunction
 Description: Returns a list of attendees matching the rules you provide, without deleting them. The rules should be a JSON object where each key is a field and the value is either a value to match or an object with operators (eq, lt, lte, gt, gte, neq, in). Only use the following fields in rules: first_name, last_name, age, gender, phone_number, email_address, dietary_requirements. Example: {"age": {"lt": 18}} will return all attendees under 18. You can combine multiple rules. If you want to call this function, respond ONLY with a JSON object in this format:
 {"function_call": {"name": "getAttendeesFunction", "arguments": {"rules": {"age": {"lt": 18}}}}}
 
-Function: expensesFunction
-Description: Allows you to get, add, or delete expenses for the hackathon. To get all expenses, call with no arguments. To add an expense, provide a description, amount, and specify whether it is an "income" or "withdrawal" using the field \`transactionType\`. To delete an expense, provide the id. Example calls:
-Get all expenses:
-{"function_call": {"name": "expensesFunction", "arguments": {}}}
-Add an expense:
-{"function_call": {"name": "expensesFunction", "arguments": {"action": "add", "description": "Pizza", "amount": 50, "transactionType": "withdrawal"}}}
-Delete an expense:
-{"function_call": {"name": "expensesFunction", "arguments": {"action": "delete", "id": "abc123"}}}
-
 When calling a function, respond ONLY with a raw JSON object, not inside a code block, and do not include any Markdown formatting or extra text. Do not add any explanation or preamble.
 `;
 
@@ -42,7 +33,6 @@ When calling a function, respond ONLY with a raw JSON object, not inside a code 
 const baseSystemPrompt = functionDescription +
     "You are a helpful assistant for a website that is designed to help people answer questions about organising a Hackathon. " +
     "Don't reiterate that you are a hackathon assistant; just be helpful and concise. " +
-    "If a user asks to remove or update an expense by description (such as amount, title, or category) and not by ID, you MUST first call expensesFunction with no arguments to retrieve the list of expenses, find the matching expense, and use its ID to call expensesFunction with action 'delete'. " +
     "Be prepared to do a web search for real time information on pricing of local products near the site of the hackathon." +
     "Keep responses to about 6–7 short sentences unless the user asks for more detail." +
     "When answering questions you should try to use figures and stats from the data you have been given as much as possible to make it easy for the user to make informed decisions.";
@@ -106,11 +96,6 @@ export async function askGemini(question: string, context?: string): Promise<Gem
         if (fallbackParsed && fallbackParsed.function_call) {
             return fallbackParsed;
         }
-    }
-
-    // Debugging: Log raw response for expensesFunction add action
-    if (text.includes('expensesFunction') && process.env.NODE_ENV !== 'production') {
-        console.error('Failed to parse expensesFunction response:', text);
     }
 
     // Default: Return raw text if no JSON found
