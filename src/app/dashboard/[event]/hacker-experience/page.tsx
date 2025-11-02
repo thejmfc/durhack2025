@@ -159,96 +159,95 @@ export default function EventLogistics() {
 
   return (
     <>
-      <div><LogoutButton /></div>
-      <div style={{ display: "flex", minHeight: "100vh" }}>
+      <LogoutButton />
+      <div className="flex min-h-screen">
         {/* Sidebar Navigation */}
         <DashboardSidebar uuid={params.event as string || ""} />
         {/* Main Content */}
-        <main style={{ flex: 1, padding: "2rem" }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            Hacker Experience
-          </h1>
-          {loading && <p>Loading...</p>}
-          {error && <p>{error}</p>}
+        <main className="flex-1 px-4 py-10 md:px-10 max-w-4xl mx-auto w-full">
+          <h1 className="text-4xl font-extrabold mb-10 text-gray-900 tracking-tight">Hacker Experience</h1>
+          {loading && <p className="text-gray-500 text-lg">Loading...</p>}
+          {error && <p className="text-red-700 font-semibold mb-4">{error}</p>}
           {!loading && !error && (
             <>
               {/* Timetable Section */}
-              <section style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Full Timetable</h2>
-                <form onSubmit={handleAddTimetable} style={{ display: 'flex', gap: 8, margin: '1rem 0' }}>
+              <section className="mb-10 bg-white rounded-2xl shadow-md p-6">
+                <h2 className="text-xl font-bold text-blue-600 mb-2">Full Timetable</h2>
+                <form onSubmit={handleAddTimetable} className="flex flex-row gap-4 my-4 w-full">
                   <input
                     required
                     type="time"
                     placeholder="Time"
                     value={newTimetable.time}
                     onChange={e => setNewTimetable({ ...newTimetable, time: e.target.value })}
+                    className="border border-gray-300 rounded-lg px-4 py-2 w-32 text-base"
                   />
-                  <input required placeholder="Title" value={newTimetable.title} onChange={e => setNewTimetable({ ...newTimetable, title: e.target.value })} />
-                  <input required placeholder="Description" value={newTimetable.description} onChange={e => setNewTimetable({ ...newTimetable, description: e.target.value })} />
-                  <button type="submit">Add</button>
+                  <input required placeholder="Title" value={newTimetable.title} onChange={e => setNewTimetable({ ...newTimetable, title: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <input required placeholder="Description" value={newTimetable.description} onChange={e => setNewTimetable({ ...newTimetable, description: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <button type="submit" className="bg-blue-600 text-white rounded-lg px-8 py-2 font-semibold hover:bg-blue-700 transition min-w-[90px]">Add</button>
                 </form>
-                <ul>
+                <ul className="mt-2">
                   {timetable.map((entry, idx) => (
-                    <li key={idx} style={{ marginBottom: 4 }}>
-                      <b>{entry.time}</b> - {entry.title}: {entry.description}
-                      <button style={{ marginLeft: 8 }} onClick={() => handleRemoveTimetable(idx)}>Remove</button>
+                    <li key={idx} className="mb-2 flex items-center justify-between text-base">
+                      <span><b className="text-blue-600">{entry.time}</b> - <span className="font-semibold">{entry.title}</span>: {entry.description}</span>
+                      <button onClick={() => handleRemoveTimetable(idx)} className="ml-4 bg-red-100 text-red-700 border-0 rounded-md px-4 py-1.5 font-medium hover:bg-red-200 transition">Remove</button>
                     </li>
                   ))}
                 </ul>
               </section>
 
               {/* Mini Events Section */}
-              <section style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Mini Events</h2>
-                <form onSubmit={handleAddMiniEvent} style={{ display: 'flex', gap: 8, margin: '1rem 0' }}>
-                  <input required placeholder="Title" value={newMiniEvent.title} onChange={e => setNewMiniEvent({ ...newMiniEvent, title: e.target.value })} />
-                  <input required placeholder="Description" value={newMiniEvent.description} onChange={e => setNewMiniEvent({ ...newMiniEvent, description: e.target.value })} />
-                  <input required placeholder="Host" value={newMiniEvent.host} onChange={e => setNewMiniEvent({ ...newMiniEvent, host: e.target.value })} />
-                  <button type="submit">Add</button>
+              <section className="mb-10 bg-white rounded-2xl shadow-md p-6">
+                <h2 className="text-xl font-bold text-fuchsia-700 mb-2">Mini Events</h2>
+                <form onSubmit={handleAddMiniEvent} className="flex flex-row gap-4 my-4 w-full">
+                  <input required placeholder="Title" value={newMiniEvent.title} onChange={e => setNewMiniEvent({ ...newMiniEvent, title: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <input required placeholder="Description" value={newMiniEvent.description} onChange={e => setNewMiniEvent({ ...newMiniEvent, description: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <input required placeholder="Host" value={newMiniEvent.host} onChange={e => setNewMiniEvent({ ...newMiniEvent, host: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 w-32 text-base" />
+                  <button type="submit" className="bg-fuchsia-700 text-white rounded-lg px-8 py-2 font-semibold hover:bg-fuchsia-800 transition min-w-[90px]">Add</button>
                 </form>
-                <ul>
+                <ul className="mt-2">
                   {miniEvents.map((entry, idx) => (
-                    <li key={idx} style={{ marginBottom: 4 }}>
-                      <b>{entry.title}</b>: {entry.description} <i>(Host: {entry.host})</i>
-                      <button style={{ marginLeft: 8 }} onClick={() => handleRemoveMiniEvent(idx)}>Remove</button>
+                    <li key={idx} className="mb-2 flex items-center justify-between text-base">
+                      <span><b className="text-fuchsia-700">{entry.title}</b>: {entry.description} <i className="text-gray-500">(Host: {entry.host})</i></span>
+                      <button onClick={() => handleRemoveMiniEvent(idx)} className="ml-4 bg-red-100 text-red-700 border-0 rounded-md px-4 py-1.5 font-medium hover:bg-red-200 transition">Remove</button>
                     </li>
                   ))}
                 </ul>
               </section>
 
               {/* Prizes Section */}
-              <section style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Prizes</h2>
-                <form onSubmit={handleAddPrize} style={{ display: 'flex', gap: 8, margin: '1rem 0' }}>
-                  <input required placeholder="Title" value={newPrize.title} onChange={e => setNewPrize({ ...newPrize, title: e.target.value })} />
-                  <input required placeholder="Description" value={newPrize.description} onChange={e => setNewPrize({ ...newPrize, description: e.target.value })} />
-                  <input required placeholder="Supplied By" value={newPrize.suppliedBy} onChange={e => setNewPrize({ ...newPrize, suppliedBy: e.target.value })} />
-                  <button type="submit">Add</button>
+              <section className="mb-10 bg-white rounded-2xl shadow-md p-6">
+                <h2 className="text-xl font-bold text-amber-700 mb-2">Prizes</h2>
+                <form onSubmit={handleAddPrize} className="flex flex-row gap-4 my-4 w-full">
+                  <input required placeholder="Title" value={newPrize.title} onChange={e => setNewPrize({ ...newPrize, title: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <input required placeholder="Description" value={newPrize.description} onChange={e => setNewPrize({ ...newPrize, description: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <input required placeholder="Supplied By" value={newPrize.suppliedBy} onChange={e => setNewPrize({ ...newPrize, suppliedBy: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 w-32 text-base" />
+                  <button type="submit" className="bg-amber-700 text-white rounded-lg px-8 py-2 font-semibold hover:bg-amber-800 transition min-w-[90px]">Add</button>
                 </form>
-                <ul>
+                <ul className="mt-2">
                   {prizes.map((entry, idx) => (
-                    <li key={idx} style={{ marginBottom: 4 }}>
-                      <b>{entry.title}</b>: {entry.description} <i>(Supplied by: {entry.supplied_by || entry.suppliedBy})</i>
-                      <button style={{ marginLeft: 8 }} onClick={() => handleRemovePrize(idx)}>Remove</button>
+                    <li key={idx} className="mb-2 flex items-center justify-between text-base">
+                      <span><b className="text-amber-700">{entry.title}</b>: {entry.description} <i className="text-gray-500">(Supplied by: {entry.supplied_by || entry.suppliedBy})</i></span>
+                      <button onClick={() => handleRemovePrize(idx)} className="ml-4 bg-red-100 text-red-700 border-0 rounded-md px-4 py-1.5 font-medium hover:bg-red-200 transition">Remove</button>
                     </li>
                   ))}
                 </ul>
               </section>
 
               {/* Challenges Section */}
-              <section style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Challenges</h2>
-                <form onSubmit={handleAddChallenge} style={{ display: 'flex', gap: 8, margin: '1rem 0' }}>
-                  <input required placeholder="Title" value={newChallenge.title} onChange={e => setNewChallenge({ ...newChallenge, title: e.target.value })} />
-                  <input required placeholder="Description" value={newChallenge.description} onChange={e => setNewChallenge({ ...newChallenge, description: e.target.value })} />
-                  <input required placeholder="Host" value={newChallenge.host} onChange={e => setNewChallenge({ ...newChallenge, host: e.target.value })} />
-                  <button type="submit">Add</button>
+              <section className="mb-10 bg-white rounded-2xl shadow-md p-6">
+                <h2 className="text-xl font-bold text-green-700 mb-2">Challenges</h2>
+                <form onSubmit={handleAddChallenge} className="flex flex-row gap-4 my-4 w-full">
+                  <input required placeholder="Title" value={newChallenge.title} onChange={e => setNewChallenge({ ...newChallenge, title: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <input required placeholder="Description" value={newChallenge.description} onChange={e => setNewChallenge({ ...newChallenge, description: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 flex-1 min-w-0 text-base" />
+                  <input required placeholder="Host" value={newChallenge.host} onChange={e => setNewChallenge({ ...newChallenge, host: e.target.value })} className="border border-gray-300 rounded-lg px-4 py-2 w-32 text-base" />
+                  <button type="submit" className="bg-green-700 text-white rounded-lg px-8 py-2 font-semibold hover:bg-green-800 transition min-w-[90px]">Add</button>
                 </form>
-                <ul>
+                <ul className="mt-2">
                   {challenges.map((entry, idx) => (
-                    <li key={idx} style={{ marginBottom: 4 }}>
-                      <b>{entry.title}</b>: {entry.description} <i>(Host: {entry.host})</i>
-                      <button style={{ marginLeft: 8 }} onClick={() => handleRemoveChallenge(idx)}>Remove</button>
+                    <li key={idx} className="mb-2 flex items-center justify-between text-base">
+                      <span><b className="text-green-700">{entry.title}</b>: {entry.description} <i className="text-gray-500">(Host: {entry.host})</i></span>
+                      <button onClick={() => handleRemoveChallenge(idx)} className="ml-4 bg-red-100 text-red-700 border-0 rounded-md px-4 py-1.5 font-medium hover:bg-red-200 transition">Remove</button>
                     </li>
                   ))}
                 </ul>
