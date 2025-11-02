@@ -85,7 +85,7 @@ export default function Dashboard() {
                                 drop-shadow-[0_2px_25px_rgba(139,92,246,0.5)]
                                 mb-2
                               "
-                                >
+                            >
                                 Welcome back{" "}
                                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-pink-500">
                                     {user?.email ? (user.email).split("@")[0] : ""}
@@ -130,6 +130,9 @@ export default function Dashboard() {
                                         <div>
                                             <h2 className="text-2xl font-semibold text-slate-100 mb-1 tracking-tight">Next Event: {nextUpcoming.event_title}</h2>
                                             <div className="text-slate-300 font-medium text-lg">{nextUpcoming.event_location}</div>
+                                            <div className="text-xs text-slate-400 mt-1">
+                                                {nextUpcoming.event_start_date} – {nextUpcoming.event_end_date}
+                                            </div>
                                         </div>
                                         <div className="flex-shrink-0 text-orange-400 bg-orange-500/15 rounded-full py-2 px-6 text-lg font-bold shadow">
                                             In {Math.ceil((new Date(nextUpcoming.event_start_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days
@@ -147,7 +150,14 @@ export default function Dashboard() {
                                             key={e.event_id}
                                             className="transition-transform duration-200 hover:scale-105 active:scale-98"
                                             style={{ textDecoration: 'none' }}>
-                                            <EventCard {...e} />
+                                            <EventCard
+                                                event_title={e.event_title}
+                                                event_location={e.event_location}
+                                                start_date={e.event_start_date}
+                                                end_date={e.event_end_date}
+                                                event_description={e.event_description}
+                                                event_image_url={e.event_image_url}
+                                            />
                                         </Link>
                                     ))}
                                 </div>

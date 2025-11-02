@@ -7,14 +7,15 @@ interface EventCardProps {
     event_image_url?: string;
 }
 
-export default function EventCard({
-                                      event_title = "The Hackathon",
-                                      event_location = "Hylia, Hyrule",
-                                      start_date = "The Big Bang",
-                                      end_date = "Heat Death",
-                                      event_description = "Add your hackathon description here...",
-                                      event_image_url = ""
-                                  }: EventCardProps) {
+export default function EventCard(
+    {
+        event_title = "The Hackathon",
+        event_location = "Hylia, Hyrule",
+        start_date = "The Big Bang",
+        end_date = "Heat Death",
+        event_description = "Add your hackathon description here...",
+        event_image_url = ""
+    }: EventCardProps) {
     const imageSrc =
         event_image_url && event_image_url.length > 0
             ? event_image_url
