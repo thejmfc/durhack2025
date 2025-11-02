@@ -130,19 +130,19 @@ export default function EventLogistics() {
     },
   };
 
-    const categoryData = expenses.reduce((acc: any, expense) => {
-    const category = expense.expense_category || "Uncategorized";
-    if (!acc[category]) acc[category] = 0;
-    acc[category] += Number(expense.expense_amount);
-    return acc;
+    const withdrawalsCategoryData = withdrawals.reduce((acc: any, expense) => {
+      const category = expense.expense_category || "Uncategorized";
+      if (!acc[category]) acc[category] = 0;
+      acc[category] += Number(expense.expense_amount);
+      return acc;
   }, {});
 
-  const pieChartData = {
-    labels: Object.keys(categoryData),
+  const WithdrawalPieChartData = {
+    labels: Object.keys(withdrawalsCategoryData),
     datasets: [
       {
         label: "Expenses by Category",
-        data: Object.values(categoryData),
+        data: Object.values(withdrawalsCategoryData),
         backgroundColor: [
           "#4ade80", "#f87171", "#60a5fa", "#fbbf24", "#34d399", "#ff7f50", "#eab308", "#ec4899",
         ],
@@ -150,7 +150,7 @@ export default function EventLogistics() {
     ],
   };
 
-  const pieChartOptions = {
+  const WithdrawalPieChartOptions = {
     responsive: true,
     plugins: {
       legend: {
@@ -158,7 +158,42 @@ export default function EventLogistics() {
       },
       title: {
         display: true,
-        text: "Expense Distribution by Category",
+        text: "Withdrawal Distribution by Category",
+      },
+    },
+  };
+
+
+
+  const incomePieChartData = incomes.reduce((acc: any, expense) => {
+    const category = expense.expense_category || "Uncategorized";
+    if (!acc[category]) acc[category] = 0;
+    acc[category] += Number(expense.expense_amount);
+    return acc;
+  }, {});
+
+  const IncomePieChartData = {
+    labels: Object.keys(incomePieChartData),
+    datasets: [
+      {
+        label: "Expenses by Category",
+        data: Object.values(incomePieChartData),
+        backgroundColor: [
+          "#4ade80", "#f87171", "#60a5fa", "#fbbf24", "#34d399", "#ff7f50", "#eab308", "#ec4899",
+        ],
+      },
+    ],
+  };
+
+  const IncomePieChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Income Distribution by Category",
       },
     },
   };
@@ -182,7 +217,8 @@ export default function EventLogistics() {
               <div className="w-full flex h-1/3 min-h-1/3 max-h-1/3 justify-center items-center gap-x-15">
                 <Bar data={chartData} options={chartOptions} />
               
-                <Pie data={pieChartData} options={pieChartOptions} />
+                <Pie data={WithdrawalPieChartData} options={WithdrawalPieChartOptions} />
+                <Pie data={IncomePieChartData} options={IncomePieChartOptions} />
               </div>
           
               <form
