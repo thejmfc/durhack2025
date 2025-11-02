@@ -282,8 +282,10 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                         </div>
                     </div>
                 ))}
-                {loading && <div className="text-purple-400 italic text-xs">Assistant is typing…</div>}
+                {loading && <div className="animate-pulse text-purple-400 italic text-xs">Assistant is typing…</div>}
             </div>
+
+
 
             {/* Files */}
             {files.length > 0 && (
