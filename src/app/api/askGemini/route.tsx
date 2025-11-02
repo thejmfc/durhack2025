@@ -158,6 +158,7 @@ export async function POST(req: NextRequest) {
     const combinedContext = [eventContext, organisersContext, expenseContext, sponsorContext, attendeeContext, extraContext].filter(Boolean).join("\n\n");
     const geminiResult = await askGemini(question, combinedContext);
 
+
     if (typeof geminiResult === 'object' && geminiResult.function_call) {
       const { name, arguments: args } = geminiResult.function_call;
       if (name === 'countAttendeesFunction') {
@@ -201,6 +202,65 @@ export async function POST(req: NextRequest) {
         const followupPrompt = `The function getAttendeesFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
         const followupAnswer = await askGemini(followupPrompt, combinedContext);
         return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+      } else if (name === 'expensesFunction') {
+        // Handle expensesFunction: get, add, delete
+        let apiUrl = `${req.nextUrl.origin}/api/expensesFunction`;
+        let fetchOptions: any = { method: 'GET', headers: { 'Content-Type': 'application/json' } };
+
+        if (args && args.action === 'add') {
+          // Validate required fields for the add action
+          if (!args.description || !args.amount || !args.transactionType) {
+            console.error('Missing required fields for expensesFunction add action:', args);
+            return NextResponse.json({ error: 'Missing required fields for add action' }, { status: 400 });
+          }
+
+          fetchOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              eventId,
+              expense_title: args.description, // Updated to match `description` field
+              expense_amount: args.amount, // Updated to match `amount` field
+              expense_type: args.transactionType, // Updated to match `transactionType` field
+              expense_date: args.expense_date || new Date().toISOString(), // Default to current date if not provided
+              expense_category: args.expense_category || 'Uncategorized', // Default category if not provided
+            }),
+          };
+        } else if (args && args.action === 'delete') {
+          fetchOptions = {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: args.id }),
+          };
+        } else {
+          // GET: pass eventId as query param
+          apiUrl += `?eventId=${encodeURIComponent(eventId ?? '')}`;
+          fetchOptions = { method: 'GET' };
+        }
+
+        const res = await fetch(apiUrl, fetchOptions);
+        let data;
+        const text = await res.text(); // Read the raw response text
+
+        try {
+          data = text ? JSON.parse(text) : {}; // Attempt to parse JSON
+        } catch (e) {
+          console.error("Failed to parse JSON response from expensesFunction:", e);
+          data = { error: "Invalid JSON response from expensesFunction", rawResponse: text };
+        }
+
+        // Debug: Log the raw response in non-production environments
+        if (process.env.NODE_ENV !== 'production') {
+          console.log("Raw response from expensesFunction:", text);
+        }
+
+        const followupPrompt = `The function expensesFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+        const followupAnswer = await askGemini(followupPrompt, combinedContext);
+
+        return NextResponse.json({
+          answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer),
+          function_call: true,
+        });
       }
     }
 
