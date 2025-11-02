@@ -179,13 +179,34 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
         setLoading(true);
         await saveMessage("user", userMsg);
 
-        // Build conversation history for context
-        const historyContext = messages
-            .map(m => `${m.sender === "user" ? "User" : "Assistant"}: ${m.text}`)
-            .join("\n");
+        // Build conversation history for context, including function call/result structure
+        let structuredHistory: string[] = [];
+        let lastWasFunctionCall = false;
+        messages.forEach((m, idx) => {
+            if (m.sender === "user") {
+                structuredHistory.push(`User: ${m.text}`);
+                lastWasFunctionCall = false;
+            } else if (m.sender === "bot") {
+                // Try to detect if this is a function call JSON
+                let parsed: any = null;
+                try { parsed = JSON.parse(m.text); } catch {}
+                if (parsed && parsed.function_call) {
+                    const { name, arguments: args } = parsed.function_call;
+                    structuredHistory.push(`FunctionCall: ${name} called with arguments: ${JSON.stringify(args)}`);
+                    lastWasFunctionCall = true;
+                } else if (lastWasFunctionCall) {
+                    // This is likely the function call result
+                    structuredHistory.push(`FunctionResult: ${m.text}`);
+                    lastWasFunctionCall = false;
+                } else {
+                    structuredHistory.push(`Assistant: ${m.text}`);
+                    lastWasFunctionCall = false;
+                }
+            }
+        });
 
         const filesContext = await buildFilesContext();
-        const fullContext = [historyContext, filesContext].filter(Boolean).join("\n\n");
+        const fullContext = [structuredHistory.join("\n"), filesContext].filter(Boolean).join("\n\n");
 
         const res = await fetch("/api/askGemini", {
             method: "POST",

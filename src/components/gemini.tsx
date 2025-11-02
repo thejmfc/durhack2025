@@ -11,7 +11,7 @@ const functionDescription = `
 You have access to the following functions:
 Function: countAttendeesFunction
 Description: Returns a true count of hackathon attendees.
-If you want to call this function, respond ONLY with a JSON object in this format:
+If you want to call this function, respond ONLY with a JSON object in this format, and DO NOT use Markdown or code blocks:
 {"function_call": {"name": "countAttendeesFunction", "arguments": {}}}
 
 Function: removeAttendeesFunction
@@ -28,6 +28,8 @@ Description: Returns a list of attendees matching the rules you provide, without
 {"function_call": {"name": "getAttendeesFunction", "arguments": {"rules": {"age": {"lt": 18}}}}}
 
 If you do not want to call a function, answer as normal.
+
+When calling a function, respond ONLY with a raw JSON object, not inside a code block, and do not include any Markdown formatting or extra text. Do not add any explanation or preamble.
 `;
 
 const baseSystemPrompt = functionDescription +

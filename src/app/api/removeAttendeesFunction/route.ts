@@ -11,40 +11,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing eventId" }, { status: 400 });
     }
 
-    let query = supabase.from("attendees").delete();
-    query = query.eq("event_id", eventId);
 
-    for (const [field, condition] of Object.entries(rules)) {
-      if (typeof condition === 'object' && condition !== null) {
-        for (const [op, value] of Object.entries(condition)) {
-          switch (op) {
-            case 'eq':
-              query = query.eq(field, value);
-              break;
-            case 'lt':
-              query = query.lt(field, value);
-              break;
-            case 'lte':
-              query = query.lte(field, value);
-              break;
-            case 'gt':
-              query = query.gt(field, value);
-              break;
-            case 'gte':
-              query = query.gte(field, value);
-              break;
-            case 'neq':
-              query = query.neq(field, value);
-              break;
-            case 'in':
-              query = query.in(field, Array.isArray(value) ? value : [value]);
-              break;
-            default:
-              break;
+    let query = supabase.from("attendees").delete().eq("event_id", eventId);
+
+    // Only apply rules if rules object is not empty
+    if (rules && Object.keys(rules).length > 0) {
+      for (const [field, condition] of Object.entries(rules)) {
+        if (typeof condition === 'object' && condition !== null) {
+          for (const [op, value] of Object.entries(condition)) {
+            switch (op) {
+              case 'eq':
+                query = query.eq(field, value);
+                break;
+              case 'lt':
+                query = query.lt(field, value);
+                break;
+              case 'lte':
+                query = query.lte(field, value);
+                break;
+              case 'gt':
+                query = query.gt(field, value);
+                break;
+              case 'gte':
+                query = query.gte(field, value);
+                break;
+              case 'neq':
+                query = query.neq(field, value);
+                break;
+              case 'in':
+                query = query.in(field, Array.isArray(value) ? value : [value]);
+                break;
+              default:
+                break;
+            }
           }
+        } else {
+          query = query.eq(field, condition);
         }
-      } else {
-        query = query.eq(field, condition);
       }
     }
 
