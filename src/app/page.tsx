@@ -33,7 +33,7 @@ export default function Home() {
                     {/* Welcome Box */}
                     <Box className="backdrop-blur bg-white/80 rounded-3xl shadow-xl p-10 max-w-4xl mx-auto relative group transition-shadow hover:shadow-2xl">
                         <h2 className="text-3xl text-gray-900 font-semibold mb-6 tracking-tight">
-                            Welcome to HackSmith!
+                            Welcome to Hacksmith!
                         </h2>
                         <p className="text-gray-700 leading-relaxed text-lg font-light max-w-3xl">
                             Become part of our vibrant community of hackers and creators.

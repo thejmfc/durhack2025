@@ -40,7 +40,7 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-100 via-indigo-200 to-blue-200 animate-bgGradientSlow py-12 px-4 sm:px-6 lg:px-8 relative">
             <div className="max-w-md w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 space-y-8 relative z-10">
                 <h2 className="text-center text-3xl font-extrabold text-gray-900 tracking-tight mb-2" style={{ fontFamily: "'Exo 2', sans-serif" }}>
-                    HackSmith
+                    Hacksmith
                 </h2>
                 <p className="text-center text-gray-700 mb-8 font-light">
                     Log in to your account

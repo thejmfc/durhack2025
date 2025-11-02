@@ -20,7 +20,7 @@ export default function DashboardSidebar({ uuid }: { uuid: string }) {
     <nav className="w-56 bg-gray-900 text-white p-8 flex flex-col gap-8">
         <div className="flex align-middle items-center mb-8">
             <Link href={"/dashboard"} className="mr-2"><IoIosArrowBack className="text-2xl" /></Link>
-            <div className="font-bold text-2xl">HackSmith</div>
+            <div className="font-bold text-2xl">Hacksmith</div>
         </div>
 
       <ul className="flex flex-col gap-3">
