@@ -4,7 +4,6 @@ import supabase from "@/Supabase";
 
 export async function POST(req: NextRequest) {
   try {
-    // Parse JSON body
     const body = await req.json();
     const question: string = body.question || "";
     const eventId: string | undefined = body.eventId;
@@ -17,11 +16,10 @@ export async function POST(req: NextRequest) {
     let attendeeContext = "";
 
     if (eventId) {
-      // Fetch event details
       const { data: event, error: eventError } = await supabase
         .from("hackathons")
         .select("*")
-        .eq("event_id", eventId) // adjust to Number(eventId) if your column is numeric
+        .eq("event_id", eventId)
         .single();
 
       if (eventError) {
@@ -36,7 +34,6 @@ export async function POST(req: NextRequest) {
         eventContext = `Event Title: ${title}\nEvent Location: ${location}\nEvent Start: ${start}\nEvent End: ${end}\nEvent Description: ${desc}`;
       }
 
-      // Fetch organisers linked to this event
       const { data: organisers, error: orgErr } = await supabase
         .from("organiser")
         .select("first_name,last_name,role,email_address,phone_number")
@@ -59,7 +56,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fetch finance data to this event
     const { data: expenses, error: expenseErr } = await supabase
         .from("expenses")
         .select("*")
@@ -82,7 +78,6 @@ export async function POST(req: NextRequest) {
         expenseContext = `Hacakthon Expenses (max 50 listed): \n${list}`
     }
 
-    // Sponsors
     const { data: sponsors, error: sponsorsErr } = await supabase
         .from("sponsor")
         .select("*")
@@ -105,7 +100,6 @@ export async function POST(req: NextRequest) {
         sponsorContext = `Sponsors (max 50 listed): \n${list}`
     }
 
-    // Tech
     const { data: tech, error: techErr } = await supabase
         .from("tech")
         .select("*")
@@ -128,7 +122,6 @@ export async function POST(req: NextRequest) {
         sponsorContext = `Tech details (max 50 listed): \n${list}`
     }
 
-    // Fetch attendee data
     const { data: attendees, error: attendError } = await supabase
         .from("attendees")
         .select("first_name, last_name, age, gender, dietary_requirements")
@@ -153,9 +146,25 @@ export async function POST(req: NextRequest) {
     }
 
     const combinedContext = [eventContext, organisersContext, expenseContext, sponsorContext, attendeeContext, extraContext].filter(Boolean).join("\n\n");
-    const answer = await askGemini(question, combinedContext);
+    const geminiResult = await askGemini(question, combinedContext);
 
-    return NextResponse.json({ answer });
+    if (typeof geminiResult === 'object' && geminiResult.function_call) {
+      const { name, arguments: args } = geminiResult.function_call;
+      if (name === 'countAttendeesFunction') {
+        const res = await fetch(`${req.nextUrl.origin}/api/countAttendeesFunction`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ eventId: eventId }),
+        });
+        const data = await res.json();
+        
+        const followupPrompt = `The function countAttendeesFunction was called and returned the following result: ${JSON.stringify(data.result ?? data.count ?? data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+        const followupAnswer = await askGemini(followupPrompt, combinedContext);
+        return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+      }
+    }
+
+    return NextResponse.json({ answer: typeof geminiResult === 'string' ? geminiResult : JSON.stringify(geminiResult) });
   } catch (e: any) {
     console.error("Unexpected error:", e);
     return NextResponse.json({ error: e?.message || "Unexpected error" }, { status: 400 });
