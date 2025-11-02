@@ -51,6 +51,30 @@ const commandHandlers: Record<string, Function> = {
     const followupAnswer = await askGemini(followupPrompt, combinedContext);
     return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
   },
+
+  async getFinanceFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+    const res = await fetch(`${req.nextUrl.origin}/api/getFinance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function getExpensesFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async insertFinanceFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+    const res = await fetch(`${req.nextUrl.origin}/api/insertFinance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId, financeField: args.financeField }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function insertFinanceFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
 };
 
 export async function POST(req: NextRequest) {

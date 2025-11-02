@@ -26,6 +26,14 @@ Function: getAttendeesFunction
 Description: Returns a list of attendees matching the rules you provide, without deleting them. The rules should be a JSON object where each key is a field and the value is either a value to match or an object with operators (eq, lt, lte, gt, gte, neq, in). Only use the following fields in rules: first_name, last_name, age, gender, phone_number, email_address, dietary_requirements. Example: {"age": {"lt": 18}} will return all attendees under 18. You can combine multiple rules. If you want to call this function, respond ONLY with a JSON object in this format:
 {"function_call": {"name": "getAttendeesFunction", "arguments": {"rules": {"age": {"lt": 18}}}}}
 
+Function: getFinanceFunction
+Description: Returns a list of finances for the hackathon, including their names and amounts as well as if they are withdrawals or incomes. Use this function if the user asks for expense details. If you want to call this function, respond ONLY with a JSON object in this format:
+{"function_call": {"name": "getFinanceFunction", "arguments": {}}}
+
+Function: insertFinanceFunction
+Description: Inserts a new finance field for the hackathon. Requires an event ID and the following finance field details: \`expense_title\`, \`expense_amount\`, \`expense_date\`, \`expense_type\`, \`expense_category\`. If you want to call this function, respond ONLY with a JSON object in this format:
+{"function_call": {"name": "insertFinanceFunction", "arguments": {"eventId": "<event_id>", "financeField": {"expense_title": "<title>", "expense_amount": <amount>, "expense_date": "<date>", "expense_type": "<type>", "expense_category": "<category>"}}}}
+
 When calling a function, respond ONLY with a raw JSON object, not inside a code block, and do not include any Markdown formatting or extra text. Do not add any explanation or preamble.
 `;
 
