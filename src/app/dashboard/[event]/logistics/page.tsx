@@ -102,20 +102,22 @@ export default function EventLogistics() {
                 ))}
               </section>
 
-              <section>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '2rem' }}>Buildings</h2>
-                <AddBuilding uuid={params.event as string}/>
-                {buildings.map((building) => (
+                <section>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '2rem', marginBottom: '1rem' }}>Buildings</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <AddBuilding uuid={params.event as string}/>
+                  {buildings.map((building) => (
                   <BuildingCard 
-                    key={building.building_id} // Assuming 'id' is a unique identifier
+                    key={building.building_id}
                     building_name={building.building_name}
                     building_capacity={building.building_capacity}
                     lecture_theatres={building.lecture_theatres}
                     hacking_rooms={building.hacking_rooms}
                     cost={building.cost}
                   />
-                ))}
-              </section>
+                  ))}
+                </div>
+                </section>
             </>
           }
         </main>
