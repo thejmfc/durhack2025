@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     let organisersContext = "";
     let sponsorContext = "";
     let expenseContext = "";
+    let attendeeContext = "";
 
     if (eventId) {
       // Fetch event details
@@ -127,7 +128,31 @@ export async function POST(req: NextRequest) {
         sponsorContext = `Tech details (max 50 listed): \n${list}`
     }
 
-    const combinedContext = [eventContext, organisersContext, expenseContext, sponsorContext, extraContext].filter(Boolean).join("\n\n");
+    // Fetch attendee data
+    const { data: attendees, error: attendError } = await supabase
+        .from("attendees")
+        .select("first_name, last_name, age, gender, dietary_requirements")
+        .eq("event_id", eventId)
+
+    if (attendError) {
+        console.error("Error fetching attendees:", attendError.message)
+    } else if (attendees && attendees.length) {
+        const list = attendees
+            .map((a: any) => {
+                const name = [a.first_name, a.last_name].filter(Boolean).join(" ") || "(no name)";
+                const age = a.age;
+                const gender = a.gender;
+                const phone = a.phone_number;
+                const email = a.email_address;
+                const diet = a.dietary_requirements;
+                
+                return `• Name: ${name}, Age: ${age}, Gender: ${gender}, Phone Number: ${phone}, E-mail Address: ${email}, Dietary Requirements: ${diet}`
+            })
+            .join("\n")
+        attendeeContext = `Attendee Details: \n${list}`
+    }
+
+    const combinedContext = [eventContext, organisersContext, expenseContext, sponsorContext, attendeeContext, extraContext].filter(Boolean).join("\n\n");
     const answer = await askGemini(question, combinedContext);
 
     return NextResponse.json({ answer });
