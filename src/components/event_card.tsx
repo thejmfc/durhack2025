@@ -15,11 +15,16 @@ export default function EventCard({
   event_description = "Add your hackathon description here...",
   event_image_url = ""
 }: EventCardProps) {
-  const imageSrc = event_image_url && event_image_url.length > 0 ? event_image_url : "https://placehold.co/500";
+  const imageSrc = event_image_url && event_image_url.length > 0 ? event_image_url : `https://placehold.co/500?text=${event_title}`;
   return (
     <div className="min-h-full bg-white rounded-3xl shadow-xl overflow-hidden">
-  <div className="bg-linear-to-br from-indigo-500 to-purple-600">
-        <img src={imageSrc} alt="Hackathon Logo" className="w-full h-full object-cover"/>
+      <div className="bg-linear-to-br from-indigo-500 to-purple-600">
+        <img
+          src={imageSrc}
+          alt="Hackathon Logo"
+          className="object-cover"
+          style={{ width: 500, height: 350 }}
+        />
       </div>
       <div className="p-6">
         <section className="flex justify-between items-start">
