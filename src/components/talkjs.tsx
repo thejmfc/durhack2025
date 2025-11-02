@@ -106,12 +106,19 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
     const hasEvents = events && events.length > 0;
 
     return (
-        <div className="w-80 max-w-full p-4 rounded-2xl shadow-xl bg-white/70 backdrop-blur border border-white/40 flex flex-col">
-            <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-semibold text-gray-800">AI Assistant</h3>
+        <div className="w-full max-w-full p-6 rounded-3xl bg-gradient-to-br from-white/80 via-blue-50 to-purple-50 shadow-2xl border-[1.5px] border-blue-200/40 flex flex-col relative overflow-hidden">
+
+            {/* Accent Bar */}
+            <div className="absolute left-0 top-0 w-full h-3 bg-purple-200 rounded-t-3xl" />
+
+            {/* Header */}
+            <div className="flex items-center gap-2 mb-4 mt-2 relative z-10">
+                <h3 className="font-bold text-gray-700 text-lg tracking-tight flex items-center gap-2">
+                    <span></span> Event Assistant
+                </h3>
                 {hasEvents && (
                     <select
-                        className="ml-auto text-sm border rounded-md px-2 py-1 bg-white"
+                        className="ml-auto text-xs border border-blue-200 rounded-md px-2 py-1 bg-white/80 shadow-sm focus:ring-2 focus:ring-purple-400 transition"
                         value={selectedEventId || ""}
                         onChange={e => setSelectedEventId(e.target.value || undefined)}
                     >
@@ -123,36 +130,47 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                 )}
             </div>
 
-            <div className="mb-2 h-64 overflow-y-auto rounded-lg bg-white/60 px-3 py-2 border border-white/50">
+            {/* Messages */}
+            <div className="mb-3 h-64 overflow-y-auto rounded-xl bg-white/60 px-4 py-3 border border-purple-100 shadow-inner space-y-2 scrollbar-thin scrollbar-thumb-purple-200">
                 {messages.map((msg, i) => (
-                    <div key={i} className={`mb-2 flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
-                        <div className={`${msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-800"} px-3 py-2 rounded-2xl max-w-[75%] whitespace-pre-wrap text-sm`}>{msg.text}</div>
+                    <div key={i} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                        <div className={`
+          ${msg.sender === "user"
+                            ? "bg-gradient-to-br from-blue-500/90 to-purple-500/60 text-white font-medium"
+                            : "bg-white border border-blue-100 text-blue-900"
+                        }
+          px-3 py-2 rounded-xl max-w-[80%] transition-all shadow
+        `}>
+                            {msg.text}
+                        </div>
                     </div>
                 ))}
-                {loading && <div className="text-gray-500 italic text-sm">Assistant is typing…</div>}
+                {loading && <div className="text-purple-400 italic text-xs">Assistant is typing…</div>}
             </div>
 
+            {/* Files */}
             {files.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
                     {files.map(f => (
-                        <span key={f.name} className="text-xs bg-gray-200 px-2 py-1 rounded-full flex items-center gap-1">
-                            {f.name}
-                            <button className="text-red-600" onClick={() => removeFile(f.name)}>×</button>
-                        </span>
+                        <span key={f.name} className="text-xs bg-blue-100 px-3 py-1 rounded-full flex items-center gap-1 border border-blue-200">
+          <span className="truncate max-w-[7rem]">{f.name}</span>
+          <button className="text-red-400 hover:text-red-600" onClick={() => removeFile(f.name)}>×</button>
+        </span>
                     ))}
                 </div>
             )}
 
+            {/* Form */}
             <form
-                className="flex items-stretch gap-2 flex-nowrap"
-                onSubmit={e => { e.preventDefault(); handleSend(); }}
-            >
-                <label className="shrink-0 cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm">
-                    Attach
+                className="flex items-stretch gap-2"
+                onSubmit={e => { e.preventDefault(); handleSend(); }}>
+                <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs border border-gray-300 shadow-sm flex items-center gap-1 transition">
+                    <span className="text-lg">📎</span>
+                    <span>Attach</span>
                     <input type="file" className="hidden" multiple onChange={onPickFiles} />
                 </label>
                 <input
-                    className="flex-1 min-w-0 border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 text-sm"
+                    className="flex-1 min-w-0 border border-blue-100 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring focus:border-purple-300 text-sm shadow-sm"
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder={selectedEventId ? "Ask about your event…" : "Ask anything… (optional: pick an event)"}
@@ -160,12 +178,13 @@ export default function ChatUI({ eventId, events = [] }: ChatUIProps) {
                 />
                 <button
                     type="submit"
-                    className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-60"
+                    className="bg-blue-50 hover:bg-blue-100 text-gray-700 font-semibold px-5 py-2 rounded-lg text-sm shadow-sm transition duration-200 disabled:opacity-60"
                     disabled={loading}
                 >
                     Send
                 </button>
             </form>
         </div>
+
     );
 }

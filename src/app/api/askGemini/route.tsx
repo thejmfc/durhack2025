@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
         const desc = event.event_description || "No description provided.";
 
         eventContext = `Event Title: ${title}\nEvent Location: ${location}\nEvent Start: ${start}\nEvent End: ${end}\nEvent Description: ${desc}`;
-        console.log("EVENT INFO:\n" + eventContext);
       }
 
       // Fetch organisers linked to this event
