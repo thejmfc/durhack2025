@@ -6,18 +6,12 @@ import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 
-// Register Chart.js modules
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import { MdDeleteForever } from "react-icons/md";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 export default function EventLogistics() {
   const { user } = useAuth();
@@ -53,7 +47,8 @@ export default function EventLogistics() {
     title: "",
     amount: "",
     date: new Date(),
-    type: ""
+    type: "",
+    category: ""
   });
 
   const handleChange = (e: any) => {
@@ -77,6 +72,7 @@ export default function EventLogistics() {
             expense_amount: expenseForm.amount,
             expense_date: expenseForm.date,
             expense_type: expenseForm.type,
+            expense_category: expenseForm.category,
             event_id: params.event,
           },
         ])
@@ -134,6 +130,39 @@ export default function EventLogistics() {
     },
   };
 
+    const categoryData = expenses.reduce((acc: any, expense) => {
+    const category = expense.expense_category || "Uncategorized";
+    if (!acc[category]) acc[category] = 0;
+    acc[category] += Number(expense.expense_amount);
+    return acc;
+  }, {});
+
+  const pieChartData = {
+    labels: Object.keys(categoryData),
+    datasets: [
+      {
+        label: "Expenses by Category",
+        data: Object.values(categoryData),
+        backgroundColor: [
+          "#4ade80", "#f87171", "#60a5fa", "#fbbf24", "#34d399", "#ff7f50", "#eab308", "#ec4899",
+        ],
+      },
+    ],
+  };
+
+  const pieChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Expense Distribution by Category",
+      },
+    },
+  };
+
   return (
     <>
       <div>
@@ -150,8 +179,10 @@ export default function EventLogistics() {
 
           {!loading && !error && (
             <div className="w-full space-y-8">
-              <div className="w-full max-w-lg">
+              <div className="w-full flex h-1/3 min-h-1/3 max-h-1/3 justify-center items-center gap-x-15">
                 <Bar data={chartData} options={chartOptions} />
+              
+                <Pie data={pieChartData} options={pieChartOptions} />
               </div>
           
               <form
@@ -209,6 +240,39 @@ export default function EventLogistics() {
                   </select>
                 </div>
 
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-gray-700">Category</label>
+                  <select
+                    name="category"
+                    required
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    value={expenseForm.category}
+                  >
+                    <option value="" disabled>
+                      Select category
+                    </option>
+                    {(expenseForm.type).toLowerCase() == "income" &&
+                    <>
+                      <option value="sponsorship">Sponsorship</option>
+                      <option value="society">Society</option>
+                      <option value="university">University</option>
+                      <option value="other">Other</option>
+                    </>
+                    } 
+
+                    {(expenseForm.type).toLowerCase() == "withdrawal" &&
+                    <>
+                      <option value="prizes">Prizes</option>
+                      <option value="venue">Venue</option>
+                      <option value="merchandise">Merchandise</option>
+                      <option value="catering">Catering</option>
+                      <option value="other">Other</option>
+                    </>
+                    } 
+                  </select>
+                </div>
+
                 <button
                   type="submit"
                   disabled={formLoading}
@@ -226,8 +290,9 @@ export default function EventLogistics() {
                       <tr>
                         <th className="px-4 py-3 border-b">title</th>
                         <th className="px-4 py-3 border-b">Amount</th>
+                        <th className="px-4 py-3 border-b">Category</th>
                         <th className="px-4 py-3 border-b">Date</th>
-                        <th className="px-4 py-3 border-b text-center">Action</th>
+                        <th className="px-4 py-3 border-b text-center"></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -240,6 +305,8 @@ export default function EventLogistics() {
                             {e.expense_title || "-"}
                           </td>
                           <td className="px-4 py-2 border-b">{e.expense_amount}</td>
+                          <td className="px-4 py-2 border-b">{e.expense_category}</td>
+
                           <td className="px-4 py-2 border-b">
                             {e.expense_date
                               ? new Date(e.expense_date).toLocaleDateString()
@@ -248,9 +315,9 @@ export default function EventLogistics() {
                           <td className="px-4 py-2 border-b text-center">
                             <button
                               onClick={() => handleDelete(e.expense_id)}
-                              className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                              className="px-1 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                             >
-                              Delete
+                              <MdDeleteForever className="h-6 w-6" />
                             </button>
                           </td>
                         </tr>
@@ -269,8 +336,9 @@ export default function EventLogistics() {
                       <tr>
                         <th className="px-4 py-3 border-b">title</th>
                         <th className="px-4 py-3 border-b">Amount</th>
+                        <th className="px-4 py-3 border-b">Category</th>
                         <th className="px-4 py-3 border-b">Date</th>
-                        <th className="px-4 py-3 border-b text-center">Action</th>
+                        <th className="px-4 py-3 border-b text-center"></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -283,6 +351,7 @@ export default function EventLogistics() {
                             {e.expense_title || "-"}
                           </td>
                           <td className="px-4 py-2 border-b">{e.expense_amount}</td>
+                          <td className="px-4 py-2 border-b">{e.expense_category}</td>
                           <td className="px-4 py-2 border-b">
                             {e.expense_date
                               ? new Date(e.expense_date).toLocaleDateString()
@@ -291,9 +360,9 @@ export default function EventLogistics() {
                           <td className="px-4 py-2 border-b text-center">
                             <button
                               onClick={() => handleDelete(e.expense_id)}
-                              className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                              className="px-1 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                             >
-                              Delete
+                              <MdDeleteForever className="h-6 w-6" />
                             </button>
                           </td>
                         </tr>
