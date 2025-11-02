@@ -137,7 +137,7 @@ export default function EventLogistics() {
                   id="extraMaterials"
                   value={event?.tech_extra_materials ?? ''}
                   onChange={e => setEvent({ ...event, tech_extra_materials: e.target.value })}
-                  style={{ width: '100%', padding: '0.5rem', marginTop: 4, minHeight: 60, border: '1px solid #e0e0e0', borderRadius: 6 }}
+                  style={{ width: '100%', padding: '0.5rem', marginTop: 4, minHeight: 60, border: '1px solid #e0e0e0', borderRadius: 6, resize: "none" }}
                   placeholder="e.g. Raspberry Pis, Arduinos, sensors, etc."
                 />
               </div>
