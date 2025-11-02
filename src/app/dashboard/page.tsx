@@ -33,42 +33,77 @@ export default function Dashboard() {
     const sortedEvents = [...events].sort((a, b) =>
         new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime()
     );
-
     const nextUpcoming = events
         .filter(e => new Date(e.event_start_date) > new Date())
-        .sort(
-            (a, b) =>
-                new Date(a.event_start_date).getTime() -
-                new Date(b.event_start_date).getTime()
+        .sort((a, b) =>
+            new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime()
         )[0];
 
     return (
         <>
             <style>
                 {`
-          @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap');
-          @keyframes bgGradientSlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-          }
-          .animate-bgGradientSlow {
-            background-size: 200% 200%;
-            animation: bgGradientSlow 40s ease infinite;
-          }
-        `}
+                @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap');
+                @keyframes bgGradientSlow {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                }
+                .animate-bgGradientSlow {
+                    background-size: 200% 200%;
+                    animation: bgGradientSlow 40s ease infinite;
+                }
+                `}
             </style>
-            <main className="min-h-screen flex flex-col bg-gradient-to-tr from-indigo-100 via-indigo-200 to-blue-200 animate-bgGradientSlow relative">
-                {/* Subtle geometric background pattern */}
-                <div className="pointer-events-none absolute inset-0 opacity-10 bg-[repeating-radial-gradient(circle_at_10%_10%,rgba(0,0,0,0.02),rgba(0,0,0,0.02)_2px,transparent_3px,transparent_15px)] z-0"></div>
+            <main className="min-h-screen relative flex flex-col">
+                {/* Dark grid glass background */}
+                <div
+                    className="absolute inset-0 z-0"
+                    style={{
+                        background: "#020617",
+                        backgroundImage: `
+                        linear-gradient(to right, rgba(71,85,105,0.3) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(71,85,105,0.3) 1px, transparent 1px),
+                        radial-gradient(circle at 50% 35%, rgba(139,92,246,0.16) 0%, transparent 75%)
+                        `,
+                        backgroundSize: "32px 32px, 32px 32px, 100% 100%",
+                    }}
+                />
+                <div className="pointer-events-none absolute inset-0 opacity-10 bg-[repeating-radial-gradient(circle_at_10%_10%,rgba(255,255,255,0.04),transparent_3px,transparent_15px)] z-0"></div>
 
                 <LogoutButton />
-                <section className="container mx-auto px-7 pt-8 pb-14 flex flex-col gap-6 relative z-10">
-                    <h1
-                        className="text-4xl font-extrabold text-center mb-6 tracking-tight"
-                        style={{ fontFamily: "'Exo 2', sans-serif" }}
-                    >
-                        {user?.email ? `Welcome back ${(user.email)?.split("@")[0]}!` : "Welcome back!"}
-                    </h1>
+
+                <section className="container mx-auto px-7 pt-8 pb-14 flex flex-col gap-8 relative z-10">
+                    {/* Gradient neon heading */}
+                    <div className="mb-2 text-center relative">
+                        <div className="relative inline-block">
+                            <h1
+                                style={{ fontFamily: "'Exo 2', 'Poppins', 'Manrope', sans-serif" }}
+                                className="
+                                text-4xl md:text-5xl font-extrabold tracking-tight
+                                text-transparent bg-clip-text
+                                bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
+                                drop-shadow-[0_2px_25px_rgba(139,92,246,0.5)]
+                                mb-2
+                              "
+                                >
+                                Welcome back{" "}
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-pink-500">
+                                    {user?.email ? (user.email).split("@")[0] : ""}
+                                </span>
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-pink-500 font-extrabold">
+                                    !
+                                </span>
+                            </h1>
+
+                            <div className="
+                                absolute left-0 right-0 top-0 bottom-0
+                                rounded-lg pointer-events-none blur-lg opacity-50
+                                bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+                                -z-10
+                            " />
+                        </div>
+                    </div>
+
                     {loading && (
                         <div className="flex items-center justify-center py-10">
                             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500" />
@@ -76,27 +111,27 @@ export default function Dashboard() {
                     )}
 
                     {!loading && sortedEvents.length === 0 && (
-                        <div className="flex flex-col items-center py-10">
-                            <h2 className="text-2xl text-gray-700 font-semibold mb-2">You have no events yet</h2>
-                            <p className="text-gray-500">Add your first event</p>
+                        <div className="flex flex-col items-center py-10 bg-white/5 backdrop-blur-3xl rounded-2xl border border-white/10 shadow-lg">
+                            <h2 className="text-2xl text-slate-100 font-semibold mb-2">You have no events yet</h2>
+                            <p className="text-slate-300">Add your first event</p>
                         </div>
                     )}
 
+                    {/* Show events if present */}
                     {!loading && sortedEvents.length > 0 && (
                         <>
                             {/* Next Upcoming Event */}
                             {nextUpcoming && (
                                 <Link
                                     href={`/dashboard/${nextUpcoming.event_id}`}
-                                    key={nextUpcoming.event_id}
                                     className="block mx-auto max-w-3xl"
                                     style={{ textDecoration: 'none' }}>
-                                    <div className="w-full rounded-3xl bg-white/80 backdrop-blur shadow-2xl border border-indigo-100 px-7 py-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-indigo-50 transition duration-300">
+                                    <div className="w-full rounded-3xl bg-white/10 backdrop-blur-lg shadow-2xl border border-white/10 px-7 py-6 flex items-center justify-between gap-4 cursor-pointer hover:scale-[1.02] hover:shadow-xl transition duration-300">
                                         <div>
-                                            <h2 className="text-2xl font-semibold text-gray-900 mb-1 tracking-tight">Next Event: {nextUpcoming.event_title}</h2>
-                                            <div className="text-gray-600 font-medium text-lg">{nextUpcoming.event_location}</div>
+                                            <h2 className="text-2xl font-semibold text-slate-100 mb-1 tracking-tight">Next Event: {nextUpcoming.event_title}</h2>
+                                            <div className="text-slate-300 font-medium text-lg">{nextUpcoming.event_location}</div>
                                         </div>
-                                        <div className="flex-shrink-0 text-indigo-700 bg-indigo-100 rounded-full py-2 px-6 text-lg font-bold shadow">
+                                        <div className="flex-shrink-0 text-orange-400 bg-orange-500/15 rounded-full py-2 px-6 text-lg font-bold shadow">
                                             In {Math.ceil((new Date(nextUpcoming.event_start_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days
                                         </div>
                                     </div>
@@ -120,7 +155,8 @@ export default function Dashboard() {
                         </>
                     )}
                 </section>
-                {/* Floating "+" event button */}
+
+                {/* Floating "+" event button - glass style */}
                 <div className="fixed bottom-7 left-7 z-20">
                     <EventCreate />
                 </div>

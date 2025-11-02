@@ -120,16 +120,19 @@ export default function Signup() {
                             <button
                                 type="submit"
                                 className={`w-full flex justify-center py-3 rounded-xl
-                                    font-semibold transition shadow-lg
+                                font-semibold transition 
+                                shadow-lg
                                     ${loading
-                                    ? "bg-indigo-300 cursor-not-allowed"
-                                    : "bg-orange-500 focus:ring-offset-2"
+                                    ? "bg-orange-300 cursor-not-allowed"
+                                    : "bg-orange-500 hover:scale-103 hover:shadow-xl focus:ring-2 focus:ring-orange-400/80 focus:ring-offset-2"
                                 }
-                                    text-slate-50`}
+                                text-slate-50`}
                                 disabled={loading}
                             >
                                 {loading ? "Signing up..." : "Sign Up"}
                             </button>
+
+
                         </form>
                         <div className="text-center mt-6">
                             <a href="/auth/login" className="text-indigo-300 hover:text-pink-300 hover:underline text-sm transition">
