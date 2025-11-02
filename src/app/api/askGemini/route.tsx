@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
 
     let eventContext = "";
     let organisersContext = "";
+    let expenseContext = "";
 
     if (eventId) {
       // Fetch event details
@@ -57,10 +58,30 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Combine all context
-    const combinedContext = [eventContext, organisersContext, extraContext].filter(Boolean).join("\n\n");
+    // Fetch finance data to this event
+    const { data: expenses, error: expenseErr } = await supabase
+        .from("expenses")
+        .select("*")
+        .eq("event_id", eventId)
+        .limit(50);
 
-    // Ask Gemini
+    if (expenseErr) {
+        console.error("Error fetching expenses:", expenseErr.message);
+    } else if (expenses && expenses.length) {
+        const list = expenses
+            .map((o: any) => {
+                const title = o.expense_title;
+                const amount = o.expense_amount;
+                const type = o.expense_type;
+                const date = o.expense_date;
+                const category = o.expense_category;
+                return `• Expense Title: ${title}, Amount: £${amount}, In/Out: ${type}, Expense Date: ${date}, Expense Category: ${category}`
+            })
+            .join("\n")
+        expenseContext = `Hacakthon Expenses (max 50 listed): \n${list}`
+    }
+
+    const combinedContext = [eventContext, organisersContext, expenseContext, extraContext].filter(Boolean).join("\n\n");
     const answer = await askGemini(question, combinedContext);
 
     return NextResponse.json({ answer });
