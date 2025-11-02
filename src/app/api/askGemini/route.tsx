@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
 
     let eventContext = "";
     let organisersContext = "";
+    let sponsorContext = "";
     let expenseContext = "";
 
     if (eventId) {
@@ -80,7 +81,53 @@ export async function POST(req: NextRequest) {
         expenseContext = `Hacakthon Expenses (max 50 listed): \n${list}`
     }
 
-    const combinedContext = [eventContext, organisersContext, expenseContext, extraContext].filter(Boolean).join("\n\n");
+    // Sponsors
+    const { data: sponsors, error: sponsorsErr } = await supabase
+        .from("sponsor")
+        .select("*")
+        .eq("event_id", eventId)
+        .limit(50);
+
+    if (sponsorsErr) {
+        console.error("Error fetching sponsors:", sponsorsErr.message);
+    } else if (sponsors && sponsors.length) {
+        const list = sponsors
+            .map((s: any) => {
+                const name = s.sponsor_name;
+                const tier = s.sponsor_tier;
+                const amount = s.sponsor_amount;
+                const status = s.sponsor_status;
+
+                return `• Sponsor Name: ${name}, Amount: £${amount}, Tier: ${tier}, Status ${status}`
+            })
+            .join("\n")
+        sponsorContext = `Sponsors (max 50 listed): \n${list}`
+    }
+
+    // Tech
+    const { data: tech, error: techErr } = await supabase
+        .from("tech")
+        .select("*")
+        .eq("event_id", eventId)
+        .limit(50);
+
+    if (techErr) {
+        console.error("Error fetching tech:", techErr.message);
+    } else if (tech && tech.length) {
+        const list = tech
+            .map((t: any) => {
+                const screens = t.tech_screens;
+                const sockets = t.tech_sockets;
+                const extensions = t.tech_extension_leads;
+                const extras = t.tech_extra_materials;
+
+                return `• Screens Count: ${screens}, Plug Sockets count: £${sockets}, Extension Leads counts: ${extensions}, Extra tech (Usually electronics) ${extras}`
+            })
+            .join("\n")
+        sponsorContext = `Tech details (max 50 listed): \n${list}`
+    }
+
+    const combinedContext = [eventContext, organisersContext, expenseContext, sponsorContext, extraContext].filter(Boolean).join("\n\n");
     const answer = await askGemini(question, combinedContext);
 
     return NextResponse.json({ answer });

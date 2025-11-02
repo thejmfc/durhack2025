@@ -119,7 +119,7 @@ export default function EventLogistics() {
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -153,7 +153,7 @@ export default function EventLogistics() {
 
   const WithdrawalPieChartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -189,7 +189,7 @@ export default function EventLogistics() {
 
   const IncomePieChartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -217,11 +217,16 @@ export default function EventLogistics() {
 
           {!loading && !error && (
             <div className="w-full space-y-8">
-              <div className="flex h-1/4 max-h-1/4 justify-center items-center">
-                <Bar data={chartData} options={chartOptions} />
-              
-                <Pie data={WithdrawalPieChartData} options={WithdrawalPieChartOptions} />
-                <Pie data={IncomePieChartData} options={IncomePieChartOptions} />
+              <div className="flex flex-wrap gap-6 justify-center items-start w-full">
+                <div style={{ width: 400, height: 300, minWidth: 250 }}>
+                  <Bar data={chartData} options={chartOptions} width={400} height={300} />
+                </div>
+                <div style={{ width: 400, height: 300, minWidth: 250 }}>
+                  <Pie data={WithdrawalPieChartData} options={WithdrawalPieChartOptions} width={400} height={300} />
+                </div>
+                <div style={{ width: 400, height: 300, minWidth: 250 }}>
+                  <Pie data={IncomePieChartData} options={IncomePieChartOptions} width={400} height={300} />
+                </div>
               </div>
           
               <form
