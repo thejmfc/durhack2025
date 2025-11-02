@@ -52,7 +52,7 @@ export default function AddBuilding({ uuid }: { uuid: string }) {
                 .from("expenses")
                 .insert([
                     {
-                        expense_title: buildingDetails.building_name + " Sponsorship",
+                        expense_title: buildingDetails.building_name + "Booking",
                         expense_amount: buildingDetails.cost,
                         expense_type: "Withdrawal",
                         expense_category: "Logistics",
