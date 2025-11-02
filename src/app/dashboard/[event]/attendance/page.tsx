@@ -3,7 +3,8 @@ import DashboardSidebar from "@/components/dashboardSidebar";
 import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import Papa from "papaparse";
 
 // Component to add a new attendee
 function AddAttendee({ eventId }: { eventId: string }) {
@@ -18,6 +19,52 @@ function AddAttendee({ eventId }: { eventId: string }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [csvLoading, setCsvLoading] = useState(false);
+  const [csvError, setCsvError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  // CSV upload handler
+  const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCsvError(null);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCsvLoading(true);
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results: any) => {
+        // Map CSV columns to form fields
+        const mapped = results.data.map((row: any) => ({
+          event_id: eventId,
+          first_name: row.first_name || row["First Name"] || "",
+          last_name: row.last_name || row["Last Name"] || "",
+          age: row.age || row["Age"] || "",
+          gender: row.gender || row["Gender"] || "",
+          phone_number: row.phone_number || row["Phone Number"] || "",
+          email_address: row.email_address || row["Email"] || row["Email Address"] || "",
+          dietary_requirements: row.dietary_requirements || row["Dietary Requirements"] || "",
+        }));
+        // Filter out empty rows
+        const valid = mapped.filter(a => a.first_name && a.last_name && a.email_address);
+        if (valid.length === 0) {
+          setCsvError("No valid attendees found in CSV.");
+          setCsvLoading(false);
+          return;
+        }
+        // Insert to Supabase
+        const { error } = await supabase.from("attendees").insert(valid);
+        if (error) {
+          setCsvError(error.message);
+        } else {
+          window.location.reload();
+        }
+        setCsvLoading(false);
+      },
+      error: (err: any) => {
+        setCsvError("Failed to parse CSV: " + err.message);
+        setCsvLoading(false);
+      },
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -55,7 +102,22 @@ function AddAttendee({ eventId }: { eventId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+  <form onSubmit={handleSubmit} className="space-y-4">
+      {/* CSV Upload */}
+      <div className="mb-2">
+        <label className="block font-medium mb-1">Upload CSV to add multiple attendees:</label>
+        <input
+          type="file"
+          accept=".csv"
+          ref={fileInputRef}
+          onChange={handleCSVUpload}
+          className="block border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          disabled={csvLoading}
+        />
+        {csvLoading && <p className="text-sm text-blue-600 mt-1">Uploading and parsing CSV...</p>}
+        {csvError && <p className="text-sm text-red-500 mt-1">{csvError}</p>}
+        <p className="text-xs text-gray-500 mt-1">Columns: first_name, last_name, age, gender, phone_number, email_address, dietary_requirements</p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           name="first_name"
