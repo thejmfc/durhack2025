@@ -5,13 +5,19 @@ import { GoogleGenAI } from '@google/genai';
 const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
 
 
+
 // Add function/tool description for agentic function calling
 const functionDescription = `
-You have access to the following function:
+You have access to the following functions:
 Function: countAttendeesFunction
-Description: Returns a true count of hackathon attendees
+Description: Returns a true count of hackathon attendees.
 If you want to call this function, respond ONLY with a JSON object in this format:
-{"function_call": {"name": "countAttendeesFunction", "arguments": {"name": "<name>"}}}
+{"function_call": {"name": "countAttendeesFunction", "arguments": {}}}
+
+Function: removeAttendeesFunction
+Description: Removes attendees from the event based on rules you provide. The rules should be a JSON object where each key is a field (e.g. age) and the value is either a value to match or an object with operators (eq, lt, lte, gt, gte, neq, in). Example: {"age": {"lt": 18}} will remove all attendees under 18. You can combine multiple rules. If you want to call this function, respond ONLY with a JSON object in this format:
+{"function_call": {"name": "removeAttendeesFunction", "arguments": {"rules": {"age": {"lt": 18}}}}}
+
 If you do not want to call a function, answer as normal.
 `;
 
@@ -23,7 +29,7 @@ const baseSystemPrompt = functionDescription +
     "When answering questions you should try to use figures and stats from the data you have been given as much as possible to make it easy for the user to make informed decisions.";
 
 
-export async function askGemini(question: string, context?: string): Promise<string | { function_call: { name: string, arguments: { name: string } } }> {
+export async function askGemini(question: string, context?: string): Promise<string | { function_call: { name: string, arguments: Record<string, any> } }> {
     if (!question) throw new Error('Question must be a non-empty string.');
 
     const contextualBlock = context ? `\n\nHere is relevant event context you can use when answering (do not expose private data verbatim; summarise as needed):\n${context}` : "";
