@@ -34,6 +34,11 @@ Function: insertFinanceFunction
 Description: Inserts a new finance field for the hackathon. Requires an event ID and the following finance field details: \`expense_title\`, \`expense_amount\`, \`expense_date\`, \`expense_type\`, \`expense_category\`. If you want to call this function, respond ONLY with a JSON object in this format:
 {"function_call": {"name": "insertFinanceFunction", "arguments": {"eventId": "<event_id>", "financeField": {"expense_title": "<title>", "expense_amount": <amount>, "expense_date": "<date>", "expense_type": "<type>", "expense_category": "<category>"}}}}
 
+Function: deleteFinanceFunction
+Description: Deletes a finance field for the hackathon. Requires an event ID and the expense title: \`expense_title\`. If you want to call this function, respond ONLY with a JSON object in this format:
+{"function_call": {"name": "deleteFinanceFunction", "arguments": {"eventId": "<event_id>", "expenseField": {"expense_title": "<title>"}}}}
+
+
 When calling a function, respond ONLY with a raw JSON object, not inside a code block, and do not include any Markdown formatting or extra text. Do not add any explanation or preamble.
 `;
 

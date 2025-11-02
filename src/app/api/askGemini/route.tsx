@@ -53,6 +53,7 @@ const commandHandlers: Record<string, Function> = {
   },
 
   async getFinanceFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+   console.log(eventId)
     const res = await fetch(`${req.nextUrl.origin}/api/getFinance`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -72,6 +73,19 @@ const commandHandlers: Record<string, Function> = {
     });
     const data = await res.json();
     const followupPrompt = `The function insertFinanceFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+    const followupAnswer = await askGemini(followupPrompt, combinedContext);
+    return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+  },
+
+  async deleteFinanceFunction(args: any, req: NextRequest, eventId: string, combinedContext: string, question: string) {
+   console.log(eventId)
+    const res = await fetch(`${req.nextUrl.origin}/api/deleteFinance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId, expenseField: args.expenseField }),
+    });
+    const data = await res.json();
+    const followupPrompt = `The function deleteFinanceFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
     const followupAnswer = await askGemini(followupPrompt, combinedContext);
     return NextResponse.json({ answer: typeof followupAnswer === "string" ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
   },
