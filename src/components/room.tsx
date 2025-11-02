@@ -18,13 +18,18 @@ export default function BuildingCard({
         </section>
         
         <section>
+            <div className="flex items-center text-gray-600">
+            <p className="text-sm">
+               Capacity: {building_capacity}
+            </p>
+            </div>
           <div className="flex items-center text-gray-600">
             <p className="text-sm">
-              Leacture Theatres: {lecture_theatres}
+              Lecture Theatres: {lecture_theatres}
             </p>
           </div>
           <p className="text-gray-700">
-            hacking_rooms: {hacking_rooms}
+            Hacking Rooms: {hacking_rooms}
           </p>
           <p className="text-gray-700">
             Cost: £{cost}
