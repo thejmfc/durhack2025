@@ -62,7 +62,7 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
   return (
     <form
       onSubmit={handleAddOrganiser}
-      className="max-w-md mx-auto bg-white shadow-md rounded-xl p-6 space-y-4"
+      className="max-w-full mx-auto bg-white shadow-md rounded-xl p-6 space-y-4"
     >
       <h2 className="text-lg font-semibold text-gray-800">
         Add Organiser

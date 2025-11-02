@@ -8,6 +8,7 @@ import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+
 export default function EventLogistics() {
   const { user } = useAuth();
   const params = useParams();
@@ -19,7 +20,7 @@ export default function EventLogistics() {
   useEffect(() => {
     if (!user) return;
 
-    const fetchOrganisers = async (uuid : string) => {
+    const fetchOrganisers = async (uuid: string) => {
       setLoading(true);
       setError(null);
 
@@ -42,40 +43,59 @@ export default function EventLogistics() {
   }, [params.event as string]);
 
   return (
-    <><div><LogoutButton /></div><div style={{ display: "flex", minHeight: "100vh" }}>
+    <div className="flex min-h-screen">
       {/* Sidebar Navigation */}
       <DashboardSidebar uuid={params.event as string || ""} />
-      
-      {/* Main Content */}
-      <main style={{ flex: 1, padding: "2rem" }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-        Logistics
-        </h1>
-        {loading && <p>Loading...</p>}
-        {error && <p>{error}</p>}
-        {!loading && !error && 
-        <div className="flex w-full">
-            <div className="w-full flex flex-col gap-2">
 
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col bg-gray-50">
+        <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem", marginLeft: "1rem", marginTop: "1rem" }}>
+          Logistics
+        </h1>
+
+        <section className="flex-1 p-8 space-y-8">
+          {/* Add Organiser Section */}
+
+            <AddOrganiser uuid={params.event as string} />
+
+          {/* Organisers List Section */}
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 space-y-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-800">
+                Current Organisers
+              </h2>
+              {loading && <p className="text-sm text-gray-500">Loading...</p>}
+            </div>
+
+            {error && (
+              <p className="text-red-500 bg-red-50 border border-red-200 p-3 rounded-md">
+                Error: {error}
+              </p>
+            )}
+
+            {!loading && !error && organisers.length === 0 && (
+              <p className="text-gray-600 italic">
+                No organisers have been added yet.
+              </p>
+            )}
+
+            {!loading && !error && organisers.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {organisers.map((e, idx) => (
-                    <OrganiserCard 
+                  <OrganiserCard
                     key={idx}
                     first_name={e.first_name}
                     last_name={e.last_name}
                     phone_number={e.phone_number}
                     email_address={e.email_address}
                     role={e.role}
-                    />
-                    ))
-                }
-            </div>
-            <div className="w-full">
-
-                <AddOrganiser uuid={params.event as string}/>
-            </div>
-        </div>
-        }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       </main>
-    </div></>
+    </div>
   );
 }
