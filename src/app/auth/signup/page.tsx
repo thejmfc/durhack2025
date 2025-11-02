@@ -79,7 +79,7 @@ export default function Signup() {
                                     -z-10
                                 "/>
                             </div>
-                            <p className="text-slate-300 font-light text-md">Join HackSmith today!</p>
+                            <p className="text-slate-300 font-light text-md">Join Hacksmith today!</p>
                         </div>
                         <form className="space-y-7" onSubmit={handleSignup} autoComplete="off">
                             <div>
