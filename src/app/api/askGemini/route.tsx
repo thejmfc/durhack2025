@@ -32,6 +32,16 @@ export async function POST(req: NextRequest) {
         const desc = event.event_description || "No description provided.";
 
         eventContext = `Event Title: ${title}\nEvent Location: ${location}\nEvent Start: ${start}\nEvent End: ${end}\nEvent Description: ${desc}`;
+      } else if (name === 'getAttendeesFunction') {
+        const res = await fetch(`${req.nextUrl.origin}/api/getAttendeesFunction`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ eventId: eventId, rules: args.rules }),
+        });
+        const data = await res.json();
+        const followupPrompt = `The function getAttendeesFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+        const followupAnswer = await askGemini(followupPrompt, combinedContext);
+        return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
       }
 
       const { data: organisers, error: orgErr } = await supabase
@@ -179,6 +189,16 @@ export async function POST(req: NextRequest) {
         });
         const data = await res.json();
         const followupPrompt = `The function attendeesStatsFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
+        const followupAnswer = await askGemini(followupPrompt, combinedContext);
+        return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
+      } else if (name === 'getAttendeesFunction') {
+        const res = await fetch(`${req.nextUrl.origin}/api/getAttendeesFunction`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ eventId, rules: args.rules }),
+        });
+        const data = await res.json();
+        const followupPrompt = `The function getAttendeesFunction was called and returned the following result: ${JSON.stringify(data)}.\n\nPlease provide a user-friendly answer to the original question: ${question}`;
         const followupAnswer = await askGemini(followupPrompt, combinedContext);
         return NextResponse.json({ answer: typeof followupAnswer === 'string' ? followupAnswer : JSON.stringify(followupAnswer), function_call: true });
       }

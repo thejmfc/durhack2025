@@ -15,12 +15,17 @@ If you want to call this function, respond ONLY with a JSON object in this forma
 {"function_call": {"name": "countAttendeesFunction", "arguments": {}}}
 
 Function: removeAttendeesFunction
-Description: Removes attendees from the event based on rules you provide. The rules should be a JSON object where each key is a field (e.g. age) and the value is either a value to match or an object with operators (eq, lt, lte, gt, gte, neq, in). Example: {"age": {"lt": 18}} will remove all attendees under 18. You can combine multiple rules. If you want to call this function, respond ONLY with a JSON object in this format:
+Description: Removes attendees from the event based on rules you provide. The rules should be a JSON object where each key is a field (e.g. age) and the value is either a value to match or an object with operators (eq, lt, lte, gt, gte, neq, in). Example: {"age": {"lt": 18}} will remove all attendees under 18. Only use the following fields in rules: first_name, last_name, age, gender, phone_number, email_address, dietary_requirements. You can combine multiple rules. If you want to call this function, respond ONLY with a JSON object in this format:
 {"function_call": {"name": "removeAttendeesFunction", "arguments": {"rules": {"age": {"lt": 18}}}}}
 
 Function: attendeesStatsFunction
 Description: Returns statistics about all attendees, including age range, gender breakdown, dietary breakdown, and other relevant stats. Use this function if the user asks for any statistics or breakdowns about attendees. If you want to call this function, respond ONLY with a JSON object in this format:
 {"function_call": {"name": "attendeesStatsFunction", "arguments": {}}}
+
+
+Function: getAttendeesFunction
+Description: Returns a list of attendees matching the rules you provide, without deleting them. The rules should be a JSON object where each key is a field and the value is either a value to match or an object with operators (eq, lt, lte, gt, gte, neq, in). Only use the following fields in rules: first_name, last_name, age, gender, phone_number, email_address, dietary_requirements. Example: {"age": {"lt": 18}} will return all attendees under 18. You can combine multiple rules. If you want to call this function, respond ONLY with a JSON object in this format:
+{"function_call": {"name": "getAttendeesFunction", "arguments": {"rules": {"age": {"lt": 18}}}}}
 
 If you do not want to call a function, answer as normal.
 `;
