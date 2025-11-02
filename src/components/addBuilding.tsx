@@ -42,7 +42,7 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
             lecture_theatres: buildingDetails.lecture_theatres,
             hacking_rooms: buildingDetails.hacking_rooms,
             cost: buildingDetails.cost,
-            building_id: uuid,
+            event_id: uuid,
           },
         ])
         .select();
@@ -118,7 +118,7 @@ export default function AddOrganiser({ uuid } : {uuid : string}) {
         disabled={isLoading}
         className="w-full bg-indigo-600 text-white py-2 rounded-md font-medium hover:bg-indigo-700"
       >
-        {isLoading ? "Adding..." : "Add Organiser"}
+        {isLoading ? "Adding..." : "Add Building"}
       </button>
     </form>
   );
