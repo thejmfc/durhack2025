@@ -66,17 +66,18 @@ export default function Dashboard() {
                     </Link>
                 }
 
-            
+
 
 
                 <div className="w-full flex flex-col items-center">
-
-
-                    <div className="grid grid-cols-3 w-5/6 gap-2 mb-5">
-
+                    <div className="grid grid-cols-3 w-5/6 gap-3 mb-5">
                         {sortedEvents.map((e) => (
-                            <Link href={`/dashboard/${e.event_id}`} key={e.event_id}>
-                                <EventCard 
+                            <Link
+                                href={`/dashboard/${e.event_id}`}
+                                key={e.event_id}
+                                className="transition-transform duration-200 hover:scale-103"
+                            >
+                                <EventCard
                                     event_title={e.event_title}
                                     event_location={e.event_location}
                                     start_date={e.event_start_date}
@@ -86,9 +87,9 @@ export default function Dashboard() {
                                 />
                             </Link>
                         ))}
-
                     </div>
                 </div>
+
             </>
             }
 
