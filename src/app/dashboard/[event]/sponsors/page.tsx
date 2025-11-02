@@ -41,6 +41,19 @@ export default function EventSponsor() {
     fetchSponsors();
   }, [user, event]);
 
+  const tiers = ["Platinum", "Gold", "Silver", "Bronze", "Custom"];
+  const groupedSponsors: Record<string, any[]> = {};
+
+  tiers.forEach((tier) => {
+    groupedSponsors[tier] = sponsors.filter(
+      (sponsor) => sponsor.sponsor_tier === tier
+    );
+  });
+
+  const uncategorized = sponsors.filter(
+    (sponsor) => !tiers.includes(sponsor.sponsor_tier)
+  );
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar Navigation */}
@@ -48,11 +61,9 @@ export default function EventSponsor() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col bg-gray-50">
-        {/* Top bar */}
-        <header className="flex justify-between items-center border-b bg-white px-8 py-4 shadow-sm">
-          <h1 className="text-2xl font-bold text-gray-800">Sponsorship</h1>
-          <LogoutButton />
-        </header>
+        <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem" }}>
+          Logistics
+        </h1>
 
         {/* Page content */}
         <section className="flex-1 p-8 space-y-8">
@@ -64,8 +75,8 @@ export default function EventSponsor() {
             <AddSponsor uuid={event} />
           </div>
 
-          {/* Sponsor List */}
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          {/* Sponsor Sections by Tier */}
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 space-y-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-800">
                 Current Sponsors
@@ -86,17 +97,48 @@ export default function EventSponsor() {
             )}
 
             {!isLoading && !error && sponsors.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {sponsors.map((sponsor) => (
-                  <SponsorCard
-                    key={sponsor.id}
-                    sponsor_name={sponsor.sponsor_name}
-                    sponsor_tier={sponsor.sponsor_tier}
-                    sponsor_amount={sponsor.sponsor_amount}
-                    sponsor_status={sponsor.sponsor_status}
-                  />
-                ))}
-              </div>
+              <>
+                {tiers.map(
+                  (tier) =>
+                    groupedSponsors[tier].length > 0 && (
+                      <div key={tier}>
+                        <h3 className="text-md font-semibold text-gray-700 mb-3 border-b pb-1">
+                          {tier} Sponsors
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {groupedSponsors[tier].map((sponsor, idx) => (
+                            <SponsorCard
+                              key={idx}
+                              sponsor_name={sponsor.sponsor_name}
+                              sponsor_tier={sponsor.sponsor_tier}
+                              sponsor_amount={sponsor.sponsor_amount}
+                              sponsor_status={sponsor.sponsor_status}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )
+                )}
+
+                {uncategorized.length > 0 && (
+                  <div>
+                    <h3 className="text-md font-semibold text-gray-700 mb-3 border-b pb-1">
+                      Uncategorized Sponsors
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {uncategorized.map((sponsor) => (
+                        <SponsorCard
+                          key={sponsor.id}
+                          sponsor_name={sponsor.sponsor_name}
+                          sponsor_tier={sponsor.sponsor_tier}
+                          sponsor_amount={sponsor.sponsor_amount}
+                          sponsor_status={sponsor.sponsor_status}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </section>

@@ -27,7 +27,9 @@ export default function AddSponsor({ uuid } : {uuid : string}) {
     expense_date: new Date(),
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setSponsorDetails((prev) => ({
       ...prev,
@@ -115,14 +117,21 @@ export default function AddSponsor({ uuid } : {uuid : string}) {
         required
       />
 
-      <input
-        name="sponsor_tier"
-        placeholder="Sponsor Tier"
-        onChange={handleChange}
-        value={sponsorDetails.sponsor_tier}
-        className="w-full border p-2 rounded"
-        required
-      />
+    <select
+      name="sponsor_tier"
+      onChange={handleChange}
+      value={sponsorDetails.sponsor_tier}
+      className="w-full border p-2 rounded bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      required
+    >
+      <option value="">Select Sponsor Tier</option>
+      <option value="Platinum">Platinum</option>
+      <option value="Gold">Gold</option>
+      <option value="Silver">Silver</option>
+      <option value="Bronze">Bronze</option>
+      <option value="Custom">Custom</option>
+    </select>
+
 
       <input
         name="sponsor_amount"

@@ -16,7 +16,7 @@ export default function SponsorCard({
           </span>
         </section>
         
-        <section className="flex justify-between items-start">
+        <section className="flex justify-between items-start pt-2">
           <div className="flex items-center text-gray-600">
             <p className="text-xl">
               £{sponsor_amount}
