@@ -3,9 +3,10 @@ export default function BuildingCard({
   building_capacity = "1",
   lecture_theatres = "1",
   hacking_rooms = "1",
+  cost = "0",
 }) {
   return (
-    <div className="max-w-2/3 bg-white rounded-3xl shadow-xl overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
       <div className="p-6">
         <section className="flex justify-between items-start">
           <h1 className="text-xl font-bold text-gray-900">
@@ -25,6 +26,9 @@ export default function BuildingCard({
           <p className="text-gray-700">
             hacking_rooms: {hacking_rooms}
           </p>
+          <p className="text-gray-700">
+            Cost: £{cost}
+            </p>
         </section>
       </div>
     </div>

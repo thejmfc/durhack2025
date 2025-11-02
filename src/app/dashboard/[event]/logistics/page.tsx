@@ -3,17 +3,19 @@ import DashboardSidebar from "@/components/dashboardSidebar";
 import LogoutButton from "@/components/logoutButton";
 import OrganiserCard from "@/components/organiser";
 import AddOrganiser from "@/components/addOrganiser";
+import BuildingCard from "@/components/room";
+import AddBuilding from "@/components/addBuilding";
 import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-
 export default function EventLogistics() {
-  const { user } = useAuth();
-  const params = useParams();
+  const { user }: { user: any } = useAuth();
+  const params: { event: string } = useParams();
 
   const [organisers, setOrganisers] = useState<any[]>([]);
+  const [buildings, setBuildings] = useState<any[]>([]); // renamed for consistency
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,51 +41,58 @@ export default function EventLogistics() {
       setLoading(false);
     };
 
-    fetchOrganisers(params.event as string);
-  }, [params.event as string]);
+    if (typeof params.event === 'string') {
+      fetchOrganisers(params.event);
+    }
+  }, [params.event, user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchBuildings = async (uuid: string) => {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from("buildings")
+        .select("*")
+        .eq("event_id", uuid);
+
+      if (error) {
+        setError(error.message);
+        setBuildings([]);
+      } else {
+        setBuildings(data ?? []);
+      }
+
+      setLoading(false);
+    };
+
+    if (typeof params.event === 'string') {
+      fetchBuildings(params.event);
+    }
+  }, [params.event, user]);
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar Navigation */}
-      <DashboardSidebar uuid={params.event as string || ""} />
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col bg-gray-50">
-        <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem", marginLeft: "1rem", marginTop: "1rem" }}>
-          Logistics
-        </h1>
-
-        <section className="flex-1 p-8 space-y-8">
-          {/* Add Organiser Section */}
-
-            <AddOrganiser uuid={params.event as string} />
-
-          {/* Organisers List Section */}
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 space-y-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
-                Current Organisers
-              </h2>
-              {loading && <p className="text-sm text-gray-500">Loading...</p>}
-            </div>
-
-            {error && (
-              <p className="text-red-500 bg-red-50 border border-red-200 p-3 rounded-md">
-                Error: {error}
-              </p>
-            )}
-
-            {!loading && !error && organisers.length === 0 && (
-              <p className="text-gray-600 italic">
-                No organisers have been added yet.
-              </p>
-            )}
-
-            {!loading && !error && organisers.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {organisers.map((e, idx) => (
-                  <OrganiserCard
-                    key={idx}
+    <>
+      <div><LogoutButton /></div>
+      <div style={{ display: "flex", minHeight: "100vh" }}>
+        <DashboardSidebar uuid={params.event as string || ""} />
+        
+        <main style={{ flex: 1, padding: "2rem" }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+            Logistics
+          </h1>
+          {loading && <p>Loading...</p>}
+          {error && <p>{error}</p>}
+          {!loading && !error && 
+            <>
+              <section>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '2rem' }}>Organisers</h2>
+                <AddOrganiser uuid={params.event as string}/>
+                {organisers.map((e) => (
+                  <OrganiserCard 
+                    key={e.organiser_id} // Assuming 'id' is a unique identifier
                     first_name={e.first_name}
                     last_name={e.last_name}
                     phone_number={e.phone_number}
@@ -91,11 +100,26 @@ export default function EventLogistics() {
                     role={e.role}
                   />
                 ))}
-              </div>
-            )}
-          </div>
-        </section>
-      </main>
-    </div>
+              </section>
+
+              <section>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '2rem' }}>Buildings</h2>
+                <AddBuilding uuid={params.event as string}/>
+                {buildings.map((building) => (
+                  <BuildingCard 
+                    key={building.building_id} // Assuming 'id' is a unique identifier
+                    building_name={building.building_name}
+                    building_capacity={building.building_capacity}
+                    lecture_theatres={building.lecture_theatres}
+                    hacking_rooms={building.hacking_rooms}
+                    cost={building.cost}
+                  />
+                ))}
+              </section>
+            </>
+          }
+        </main>
+      </div>
+    </>
   );
 }
