@@ -55,7 +55,7 @@ export default function EventCreate() {
         } finally {
             setLoading(false);
             setIsModalOpen(false);
-            window.location.reload(); 
+            if (!error) {window.location.reload()} 
         }
     }
 
