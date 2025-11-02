@@ -5,7 +5,6 @@ import { useAuth } from "@/context/AuthContext";
 import supabase from "@/Supabase";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import ChatToggle from "@/components/chattoggle";
 import OverviewCard from "@/components/overviewCard";
 
 export default function EventInspect() {
@@ -194,8 +193,6 @@ export default function EventInspect() {
             </>
           )}
       </main>
-      {/* Floating AI chat assistant scoped to this event */}
-      <ChatToggle eventId={params.event as string} />
     </div></>
   );
 }
